@@ -1,5 +1,4 @@
-# nathansonR
-[![Alt text](https://pbs.twimg.com/profile_images/1094444407502209025/uokrQMjB_400x400.jpg)](https://www.nathansonlab.com/)
+# biorunneR
 
 An R package for running bioinformatic analysis
 
