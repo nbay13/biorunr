@@ -24,8 +24,8 @@ theme_nb_discrete <- function(){
 
 
 #' @importFrom ggplot2 ggplot aes geom_segment geom_violin geom_point scale_fill_manual theme_classic labs
-#' @export plot.matched.model.divergence
-plot.matched.model.divergence <- function(df, palette = NULL, gene, group_var = "Sample.Type", id_var = "Line..",  matched = F, dotted = 0, pt_size = 1, lwd = 1, levels = NULL, ylab = NULL){
+#' @export plot.matched.sample.divergence
+plot.matched.sample.divergence <- function(df, palette = NULL, gene, group_var = "Sample.Type", id_var = "Line",  matched = F, dotted = 0, pt_size = 1, lwd = 1, levels = NULL, ylab = NULL){
 	df <- df[order(df[[id_var]]),]
 	if(!is.factor(df[[group_var]])){
 		df[[group_var]] <- factor(df[[group_var]])
