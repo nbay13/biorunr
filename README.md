@@ -15,8 +15,11 @@ An R package for running bioinformatic analysis
  - topGO
 
 ## Installation
+```R
+if(!require("devtools", quietly = TRUE))
+    install.packages("devtools")
 
-`devtools::install_github("nbay13/biorunneR")`
-
+devtools::install_github("nbay13/biorunneR")
+```
 ## Usage
 ...
