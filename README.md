@@ -1,4 +1,4 @@
-# biorunneR
+# biorunR
 
 An R package for running bioinformatic analysis
 
@@ -19,7 +19,7 @@ An R package for running bioinformatic analysis
 if(!require("devtools", quietly = TRUE))
     install.packages("devtools")
 
-devtools::install_github("nbay13/biorunneR")
+devtools::install_github("nbay13/biorunR")
 ```
 ## Usage
 ...
