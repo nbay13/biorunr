@@ -1,5 +1,5 @@
 #' @export get.deltas
-get.deltas <- function(df, id, group, comparison, vars, percent = F){
+get.deltas <- function(df, id, group, comparison, vars, percent = F, return_all = F){
 	filt_df <- df[df[,group] %in% comparison,]
 	temp <- data.frame(df %>%
 	dplyr::filter(get(group) %in% comparison) %>%
@@ -13,10 +13,16 @@ get.deltas <- function(df, id, group, comparison, vars, percent = F){
 	} else {
 		delta <- a - b
 	}
-	colnames(a) <- paste(comparison[1], vars, sep = ".")
-	colnames(b) <- paste(comparison[2], vars, sep = ".")
-	colnames(delta) <- paste("Delta", vars, sep = ".")
-	return(data.frame(filt_df[filt_df[,group] == comparison[1],!colnames(filt_df) %in% c(group, vars), drop = F],a,b,delta))
+	if(return_all){
+		colnames(a) <- paste(comparison[1], vars, sep = ".")
+		colnames(b) <- paste(comparison[2], vars, sep = ".")
+		colnames(delta) <- paste("Delta", vars, sep = ".")
+		delta <- data.frame(filt_df[filt_df[,group] == comparison[1],!colnames(filt_df) %in% c(group, vars), drop = F],a,b,delta)
+	} else {
+		colnames(delta) <- paste("Delta", vars, sep = ".")
+		delta <- data.frame(filt_df[filt_df[,group] == comparison[1],!colnames(filt_df) %in% c(group, vars), drop = F],delta)
+	}
+	return(delta)
 }
 #' @export abs.max
 abs.max <- function(x) max(abs(x))
