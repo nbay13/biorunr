@@ -42,7 +42,7 @@ abs.max <- function(x) max(abs(x))
 lin.map <- function(x) (x-min(x))/(max(x)-min(x))
 
 #' @export lin.scl
-qin.proj <- function(x, lo, hi) (x-lo)/(hi-lo)
+lin.scl <- function(x, lo, hi) (x-lo)/(hi-lo)
 
 #' @export qin.map
 qin.map <- function(x, q = 0.99) (x-quantile(x,1-q))/(quantile(x, q)-quantile(x, 1-q))
@@ -50,7 +50,7 @@ qin.map <- function(x, q = 0.99) (x-quantile(x,1-q))/(quantile(x, q)-quantile(x,
 #' @export z.scale
 z.scale <- function(x, mean, sd) (x - mean) / sd
 
-#' @export z.scale
+#' @export mean.z.score
 mean.z.score <- function(exp_matrix, gene_list, sum = F, transpose = F){
 	if(transpose){
 		sig_matrix <- t(exp_matrix[,colnames(exp_matrix) %in% gene_list])
