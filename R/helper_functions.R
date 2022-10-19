@@ -24,11 +24,91 @@ get.deltas <- function(df, id, group, comparison, vars, percent = F, return_all 
 	}
 	return(delta)
 }
+
+#' @export centered.breaks
+centered.breaks <- function(pal, vals){
+	len <- length(pal)
+	breaks <- c(
+		seq(min(vals), 0, length.out=ceiling(len/2) + 1),
+		seq(max(vals)/len, max(vals), length.out=floor(len/2))
+		)
+	return(breaks)
+}
+
 #' @export abs.max
 abs.max <- function(x) max(abs(x))
 
 #' @export lin.map
 lin.map <- function(x) (x-min(x))/(max(x)-min(x))
 
+#' @export lin.scl
+qin.proj <- function(x, lo, hi) (x-lo)/(hi-lo)
+
 #' @export qin.map
-qin.map <- function(x, q = 0.99){(x-quantile(x,1-q))/(quantile(x, q)-quantile(x, 1-q))}
+qin.map <- function(x, q = 0.99) (x-quantile(x,1-q))/(quantile(x, q)-quantile(x, 1-q))
+
+#' @export z.scale
+z.scale <- function(x, mean, sd) (x - mean) / sd
+
+#' @export z.scale
+mean.z.score <- function(exp_matrix, gene_list, sum = F, transpose = F){
+	if(transpose){
+		sig_matrix <- t(exp_matrix[,colnames(exp_matrix) %in% gene_list])
+	} else {
+		sig_matrix <- exp_matrix[rownames(exp_matrix) %in% gene_list,]
+	}
+	scores <- rowSums(scale(t(sig_matrix)))
+	if(!sum) scores <- scores / ncol(exp_matrix)
+	return(scores)
+}
+
+#' @export geom.mean
+geom.mean <- function(x) exp(mean(log(x + 0.001))-0.001)
+
+# https://davetang.org/muse/2014/07/07/quantile-normalisation-in-r/
+#' @export quantile.normalization
+quantile.normalization <- function(df){
+	df_rank <- apply(df,2,rank,ties.method="min")
+	df_sorted <- data.frame(apply(df, 2, sort))
+	df_mean <- apply(df_sorted, 1, mean)
+	df_final <- apply(df_rank, 2, index.to.mean, my_mean=df_mean)
+	rownames(df_final) <- rownames(df)
+	return(df_final)
+}
+
+#' @noRd index.to.mean
+index.to.mean <- function(my_index, my_mean){
+	return(my_mean[my_index])
+}
+
+#' @noRd .ls.objects
+.ls.objects <- function (pos = 1, pattern, order.by,
+                        decreasing=FALSE, head=FALSE, n=5) {
+    napply <- function(names, fn) sapply(names, function(x)
+                                         fn(get(x, pos = pos)))
+    names <- ls(pos = pos, pattern = pattern)
+    obj.class <- napply(names, function(x) as.character(class(x))[1])
+    obj.mode <- napply(names, mode)
+    obj.type <- ifelse(is.na(obj.class), obj.mode, obj.class)
+    obj.prettysize <- napply(names, function(x) {
+                           format(utils::object.size(x), units = "auto") })
+    obj.size <- napply(names, object.size)
+    obj.dim <- t(napply(names, function(x)
+                        as.numeric(dim(x))[1:2]))
+    vec <- is.na(obj.dim)[, 1] & (obj.type != "function")
+    obj.dim[vec, 1] <- napply(names, length)[vec]
+    out <- data.frame(obj.type, obj.size, obj.prettysize, obj.dim)
+    names(out) <- c("Type", "Size", "PrettySize", "Length/Rows", "Columns")
+    if (!missing(order.by))
+        out <- out[order(out[[order.by]], decreasing=decreasing), ]
+    if (head)
+        out <- head(out, n)
+    out
+}
+
+# shorthand
+#' @export lsos
+lsos <- function(..., n=10) .ls.objects(..., order.by="Size", decreasing=TRUE, head=TRUE, n=n)
+
+#' @export corner
+corner <- function(mat) mat[1:min(5,nrow(mat)),1:min(5,ncol(mat))]

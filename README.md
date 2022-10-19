@@ -1,6 +1,6 @@
 # biorunR
 
-An R package for running bioinformatic analysis. Includes wrapper functions for performing differential expression (DESeq2), geneset enrichment (GSEA, ssGSEA, topGO), and plotting data (ggplot2).
+An R package for running bioinformatic analysis. Includes wrapper functions for performing differential expression (DESeq2), geneset enrichment (GSEA, GSVA/ssGSEA, topGO), and data vizualization (ggplot2).
 
 ## Dependencies
  - DESeq2 (& ashr)
