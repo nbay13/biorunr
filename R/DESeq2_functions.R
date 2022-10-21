@@ -1,6 +1,14 @@
+#' @export filter.genes.for.DE
+filter.genes.for.DE <- function(exp_tbl, by = c("mean", "q", "name"), thresh = 50, q = 0.33, gene_names = NULL){
+  if(by[1] == "mean") tbl <- exp_tbl[rowMeans(exp_tbl) > thresh,]
+  if(by[1] == "q") tbl <- exp_tbl[rowMeans(exp_tbl) > quantile(rowMeans(exp_tbl), q),]
+  if(by[1] == "name") tbl <- exp_tbl[rownames(exp_tbl) %in% gene_names,]
+  return(tbl)
+}
+
 #' @export get.contrast.results
 get.contrast.results <- function(deseq_dataset, contrast, 
-  lfc_shrink = T, shrink_type = "ashr", filename = F){
+  lfc_shrink = T, shrink_type = "ashr", filename = F, log.p = T){
 	results <- DESeq2::results(deseq_dataset, contrast = contrast)
 	if(lfc_shrink){
 		shrink_results <- DESeq2::lfcShrink(deseq_dataset, res = results, contrast = contrast, type = shrink_type)
@@ -10,6 +18,7 @@ get.contrast.results <- function(deseq_dataset, contrast,
   	final_results <- data.frame(results) %>%
   	dplyr::filter(!is.na(padj)) %>%
   	dplyr::arrange(dplyr::desc(stat))
+    if(log.p) final_results <- add.signed.log.p(final_results)
   	if(is.character(filename)){
     	cat(paste0("\nWriting results to file: ", filename, "\nat: ", getwd(), "\n"))
     	write.table(final_results, filename, sep = "\t", quote = F, row.names = T, col.names = NA)

@@ -50,6 +50,9 @@ qin.map <- function(x, q = 0.99) (x-quantile(x,1-q))/(quantile(x, q)-quantile(x,
 #' @export z.scale
 z.scale <- function(x, mean, sd) (x - mean) / sd
 
+#' @export get.conf.int.error
+get.conf.int.error <- function(x, q = 0.95) sd(x) * qnorm(1 - (1-q)/2) / sqrt(length(x))
+
 #' @export mean.z.score
 mean.z.score <- function(exp_matrix, gene_list, sum = F, transpose = F){
 	if(transpose){
