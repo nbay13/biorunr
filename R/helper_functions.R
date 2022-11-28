@@ -1,3 +1,23 @@
+#' @export overlap.features
+overlap.features <- function(dataset_list, row = T, col = F){
+	overlap_list <- dataset_list
+	if(row){
+		row_features <- lapply(dataset_list, rownames)
+		row_overlap <- Reduce(intersect, row_features)
+		overlap_list <- lapply(overlap_list, function(x){
+			x[match(row_overlap, rownames(x)),]
+		})
+	}
+	if(col){
+		col_features <- lapply(dataset_list, colnames)
+		col_overlap <- Reduce(intersect, col_features)
+		overlap_list <- lapply(overlap_list, function(x){
+			x[,match(col_overlap, colnames(x))]
+		})
+	} 
+	return(overlap_list)
+}
+
 #' @export get.deltas
 get.deltas <- function(df, id, group, comparison, vars, percent = F, return_all = F){
 	filt_df <- df[df[,group] %in% comparison,]
