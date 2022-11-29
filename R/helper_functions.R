@@ -1,17 +1,19 @@
 #' @export melt.and.merge
-melt.and.merge <- function(df1, df2, column_name = "value2"){
-	if(all(dim(df1) == dim(df2))){
-		mel1 <- reshape2::melt(df1)
-		mel2 <- reshape2::melt(df2)
-		if(length(column_name) == 1) mel1[,as.character(column_name)] <- mel2$value
-		else if (length(column_name) == 2){
-			mel1[,as.character(column_name[2])] <- mel2$value
-			colnames(mel1)[ncol(mel1)-1] <- column_name[1]
-		} else {
-			cat("Too many column names provided...\n")
-			return(NULL)
-		}
-		return(mel1)
+melt.and.merge <- function(df_list, column_names = c("Var1", "Var2")){
+	dims <- lapply(df_list, dim)
+	if(length(unique(dims)) == 1){
+		mel_list <- lapply(df_list, reshape2::melt)
+		mel_list <- lapply(1:length(mel_list), function(i){
+			colnames(mel_list[[i]])[ncol(mel_list[[i]])] <- paste(names(mel_list)[i], "value", sep = ".")
+			mel_list[[i]]
+		})
+		out_df <- data.frame(
+			setNames(mel_list[[1]][,1:2], column_names), 
+			lapply(mel_list, function(x) {
+				x[,ncol(x), drop = F]
+			})
+		)
+		return(out_df)
 	} else {
 		cat("Datasets are not the same size and cannot be merged...\n")
 		return(NULL)
