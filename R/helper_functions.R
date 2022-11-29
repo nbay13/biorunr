@@ -1,3 +1,23 @@
+#' @export melt.and.merge
+melt.and.merge <- function(df1, df2, column_name = "value2"){
+	if(all(dim(df1) == dim(df2))){
+		mel1 <- reshape2::melt(df1)
+		mel2 <- reshape2::melt(df2)
+		if(length(column_name) == 1) mel1[,as.character(column_name)] <- mel2$value
+		else if (length(column_name) == 2){
+			mel1[,as.character(column_name[2])] <- mel2$value
+			colnames(mel1)[ncol(mel1)-1] <- column_name[1]
+		} else {
+			cat("Too many column names provided...\n")
+			return(NULL)
+		}
+		return(mel1)
+	} else {
+		cat("Datasets are not the same size and cannot be merged...\n")
+		return(NULL)
+	}
+}
+
 #' @export overlap.features
 overlap.features <- function(dataset_list, row = T, col = F){
 	overlap_list <- dataset_list
