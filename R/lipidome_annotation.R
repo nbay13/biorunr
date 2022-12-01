@@ -13,7 +13,7 @@ inverse.list <- function(x){
 #' @export annotate.lipid.species
 annotate.lipid.species <- function(lipid_names){
 	# set up annotation vectors and lists
-	two_chain <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "LacCER", "SM", "HexCER", "Cer")
+	two_chain <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "DAG", "LacCER", "SM", "HexCER", "Cer")
 	category_list <- list(
 		"Sterol" = c("CE"), 
 		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM"), 
@@ -31,6 +31,13 @@ annotate.lipid.species <- function(lipid_names){
 	class_name <- unlist(lapply(temp, function(x){
 		return(gsub("[0-9]*","", x[[1]]))
 	}))
+	if(!all(class_name %in% names(inv_list))){
+		missing <- class_name[!class_name %in% names(inv_list)]
+		w.missing <- which(!class_name %in% names(inv_list))
+		prnt <- paste(w.missing, missing, sep = ": ", collapse = "\n")
+		stop(paste("Unknown lipid classes...\n", prnt))
+	} 
+	
 	# pre-define data.frame and fill with entries using for loop
 	structure_anno <- data.frame(matrix(nrow = length(class_name), ncol = 4))
 	colnames(structure_anno) <- c("Class","Longest.Carbon", "Total.DBs", "Saturation")
