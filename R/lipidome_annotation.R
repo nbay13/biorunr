@@ -11,7 +11,7 @@ inverse.list <- function(x){
 }
 
 #' @export annotate.lipid.species
-annotate.lipid.species <- function(lipid_names){
+annotate.lipid.species <- function(input_names){
 	# set up annotation vectors and lists
 	two_chain <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "DAG", "LacCER", "SM", "HexCER", "Cer")
 	category_list <- list(
@@ -24,7 +24,7 @@ annotate.lipid.species <- function(lipid_names){
 	)
 	inv_list <- inverse.list(category_list)
 	# clean up lipid name format
-	lipid_names <- gsub(" |-|/|\\\\|:|;|_|~", "\\.", lipid_names)
+	lipid_names <- gsub(" |-|/|\\\\|:|;|_|~", "\\.", input_names)
 	# split the details in the species names by periods
 	temp <- strsplit(lipid_names, "\\.")
 	# remove numbers from the class names
@@ -98,11 +98,12 @@ annotate.lipid.species <- function(lipid_names){
 			}
 		}
 	}
-	rownames(structure_anno) <- lipid_names
+	#rownames(structure_anno) <- lipid_names
+	structure_anno$Species <- input_names
 	structure_anno[,2:3] <- apply(structure_anno[,2:3], 2, as.numeric)
 	structure_anno$Category <- unlist(apply(structure_anno, 1, function(x){
 		if(x[1] %in% names(inv_list)) inv_list[[x[1]]]
 		else NA
 	}))
-	return(structure_anno)
+	return(structure_anno[,c("Species", "Class", "Category", "Longest.Carbon", "Total.DBs", "Saturation")])
 }
