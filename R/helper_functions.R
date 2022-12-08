@@ -1,3 +1,22 @@
+#' @export match.features
+match.features <- function(data_list, row = T, column = F){
+	if(column){
+		column_list <- lapply(data_list, colnames)
+		shared_columns <- Reduce(intersect, column_list)
+	}
+	if(row){
+		row_list <- lapply(data_list, rownames)
+		shared_rows <- Reduce(intersect, row_list)
+	} 
+	out_list <- lapply(data_list, function(x){
+		if(column) x <- x[,shared_columns]
+		if(row) x <- x[shared_rows,]
+		x
+	})
+	return(out_list)
+}
+
+
 #' @export melt.and.merge
 melt.and.merge <- function(df_list, column_names = c("Var1", "Var2")){
 	dims <- lapply(df_list, dim)
