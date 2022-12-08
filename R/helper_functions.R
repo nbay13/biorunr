@@ -9,7 +9,6 @@ split.df <- function(df, labels, by_row = F){
 	return(mats)
 }
 
-
 #' @export match.features
 match.features <- function(data_list, row = T, column = F){
 	if(column){
