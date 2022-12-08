@@ -3,10 +3,11 @@
 fisherz <- function(r) 0.5*log((1+r)/(1-r))  
 
 #from psych package, included here to avoid dependencies
-#' @export fisherz2f
+#' @export fisherz2r
 fisherz2r <- function(z) (exp(2*z)-1)/(1+exp(2*z))
 
 #from psych package, included here to avoid dependencies
+#' @export r2t
 r2t <- function(r, n) r * sqrt((n - 2)/(1 - r^2))
 
 #' @export fisherz.avg.cor
