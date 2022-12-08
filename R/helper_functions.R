@@ -1,3 +1,15 @@
+#' @export split.df
+split.df <- function(df, labels, by_row = F){
+	if(by_row){
+		mats <-  split(data.frame(df), labels)	
+	} else {
+		temp <- split(data.frame(t(df)), labels)
+		mats <- lapply(temp, t)			
+	}
+	return(mats)
+}
+
+
 #' @export match.features
 match.features <- function(data_list, row = T, column = F){
 	if(column){
