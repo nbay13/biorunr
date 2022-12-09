@@ -23,6 +23,9 @@ fisherz.avg.cor <- function(cor_list, sizes = NULL, return_z = F){
 		}
 	} else avg <- do.call("+", fisher_list) / length(fisher_list)
 	converted <- fisherz2r(avg)
+	# R = 1 causes fisher's to equal Inf, leading to NAs
+	# R = -1 causes -Inf which is still handled correctly (returns cor = -1)
+	converted[is.na(converted)] <- 1
 	if(return_z) return(list(cor = converted, z = avg))
 	else return(converted)
 }
