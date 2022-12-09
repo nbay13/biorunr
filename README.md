@@ -3,6 +3,7 @@
 An R package for running bioinformatic analysis. Includes wrapper functions for performing differential expression (DESeq2), geneset enrichment (GSEA, GSVA/ssGSEA, topGO), and data vizualization (ggplot2).
 
 ## Dependencies
+ - classInt
  - DESeq2 (& ashr)
  - dplyr
  - fgsea
