@@ -37,7 +37,7 @@ fisherz.pvalue <- function(fisherz_mat, n){
 
 #' @export fisherz.t.pvalue
 fisherz.t.pvalue <- function(fisher_mat, n){
-	t_mat <- r2t(fisher_mat, n)
+	t_mat <- suppressWarnings(r2t(fisher_mat, n))
 	# replace NAs caused by R = 1 with max t-stat + 0.001
 	t_mat[is.na(t_mat)] <- max(abs(t_mat)) + 0.001
 	return(2*(pt(-abs(t_mat), n-2)))
