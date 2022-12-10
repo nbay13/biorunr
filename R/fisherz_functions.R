@@ -1,3 +1,32 @@
+#' @export row.vars
+row.vars <- function(x){
+	return(apply(x, 1, var))
+}
+
+#' @export col.vars
+row.vars <- function(x){
+	return(apply(x, 2, var))
+}
+
+#' @export variance.filter
+variance.filter <- function(x, col = F){
+	if(col) x[,col.vars(x) > 0]
+	else x[row.vars(x) > 0,]
+}
+
+#' @export correlate.by.group
+correlate.by.group <- function(mat_a, mat_b, labels, transpose = T){
+	if(!is.factor(labels)) labels <- factor(labels)
+	cor_list <- list()
+	for(lev in levels(labels)){
+		prep_a <- mat_a[,labels == lev]
+		prep_b <- mat_b[,labels == lev]
+		if(transpose) cor_list[[lev]] <- cor(t(variance.filter(prep_a)), t(variance.filter(prep_b)))
+		else cor_list[[lev]] <- cor(variance.filter(prep_a), variance.filter(prep_b))
+	}
+	return(cor_list)
+}
+
 #from psych package, included here to avoid dependencies
 #' @export fisherz
 fisherz <- function(r) 0.5*log((1+r)/(1-r))  
@@ -19,9 +48,9 @@ fisherz.avg.cor <- function(cor_list, sizes = NULL, return_z = F){
 			fisher_list <- lapply(1:length(fisher_list), function(i){
 				fisher_list[[i]] * (sizes[i]/sum(sizes)) 
 			})
-			avg <- do.call("+", fisher_list)
+			avg <- Reduce("+", fisher_list)
 		}
-	} else avg <- do.call("+", fisher_list) / length(fisher_list)
+	} else avg <- Reduce("+", fisher_list) / length(fisher_list)
 	converted <- fisherz2r(avg)
 	# R = 1 causes fisher's to equal Inf, leading to NAs
 	# R = -1 causes -Inf which is still handled correctly (returns cor = -1)
