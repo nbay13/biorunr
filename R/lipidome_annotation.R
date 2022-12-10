@@ -10,6 +10,23 @@ inverse.list <- function(x){
     split(names, values)
 }
 
+#' @export get.lipid.category
+get.lipid.category <- function(species){
+	category_list <- list(
+		"Sterol" = c("CE"), 
+		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM"), 
+		"Glycerolipid" = c("DG", "TG", "DAG", "TAG"), 
+		"Fatty.Acyl" = c("FA"),
+		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE"), 
+		"Ether" = c("PE.O", "PE.P")
+	)
+	inv_list <- inverse.list(category_list)
+	return(unlist(sapply(species, function(x){
+		if(x %in% names(inv_list)) inv_list[[x]]
+		else NA
+	})))
+}
+
 #' @export annotate.lipid.species
 annotate.lipid.species <- function(input_names){
 	# set up annotation vectors and lists
@@ -17,12 +34,11 @@ annotate.lipid.species <- function(input_names){
 	category_list <- list(
 		"Sterol" = c("CE"), 
 		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM"), 
-		"Glycerolipid" = c("DG", "TG"), 
+		"Glycerolipid" = c("DG", "TG", "DAG", "TAG"), 
 		"Fatty.Acyl" = c("FA"),
 		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE"), 
 		"Ether" = c("PE.O", "PE.P")
 	)
-	inv_list <- inverse.list(category_list)
 	# clean up lipid name format
 	lipid_names <- gsub(" |-|/|\\\\|:|;|_|~", "\\.", input_names)
 	# split the details in the species names by periods
@@ -31,9 +47,9 @@ annotate.lipid.species <- function(input_names){
 	class_name <- unlist(lapply(temp, function(x){
 		return(gsub("[0-9]*","", x[[1]]))
 	}))
-	if(!all(class_name %in% names(inv_list))){
-		missing <- class_name[!class_name %in% names(inv_list)]
-		w.missing <- which(!class_name %in% names(inv_list))
+	if(!all(class_name %in% unlist(category_list))){
+		missing <- class_name[!class_name %in% unlist(category_list)]
+		w.missing <- which(!class_name %in% unlist(category_list))
 		prnt <- paste(w.missing, missing, sep = ": ", collapse = "\n")
 		stop(paste("Unknown lipid classes...\n", prnt))
 	} 
@@ -101,9 +117,6 @@ annotate.lipid.species <- function(input_names){
 	#rownames(structure_anno) <- lipid_names
 	structure_anno$Species <- input_names
 	structure_anno[,2:3] <- apply(structure_anno[,2:3], 2, as.numeric)
-	structure_anno$Category <- unlist(apply(structure_anno, 1, function(x){
-		if(x[1] %in% names(inv_list)) inv_list[[x[1]]]
-		else NA
-	}))
+	structure_anno$Category <- get.lipid.category(structure_anno$Class)
 	return(structure_anno[,c("Species", "Class", "Category", "Longest.Carbon", "Total.DBs", "Saturation")])
 }
