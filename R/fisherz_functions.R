@@ -4,7 +4,7 @@ row.vars <- function(x){
 }
 
 #' @export col.vars
-row.vars <- function(x){
+col.vars <- function(x){
 	return(apply(x, 2, var))
 }
 
