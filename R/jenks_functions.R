@@ -27,9 +27,10 @@ calc.gvf <- function(values, group){
 	return(gvf)
 }
 
+# tested with style = "jenks" but documentation recommends 
 #' @export run.jenks
-run.jenks <- function(values, n = NULL){
-	jenks<-classInt::classIntervals(values, style = "jenks", unique=T, n = n, samp_prop = 1)
+run.jenks <- function(values, n = NULL, style = "fisher"){
+	jenks<-classInt::classIntervals(values, style = style, unique=T, n = n, samp_prop = 1)
 	labels <- get.jenks.labels(values, jenks$brks)
 	ss <- unname(calc.ss(values, labels))
 	return(list(values = values, labels = labels, breaks = jenks$brks, 
