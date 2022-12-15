@@ -33,7 +33,7 @@ get.chain.group <- function(lengths){
 		"SCFA" = as.character(c(1:4)), 
 		"MCFA" = as.character(c(5:12)), 
 		"LCFA" = as.character(c(13:21)), 
-		"VLFA" = as.character(c(22:32))
+		"VLCFA" = as.character(c(22:32))
 	)
 	inv_list <- inverse.list(group_list)
 	return(unlist(sapply(lengths, function(x){
