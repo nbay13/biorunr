@@ -64,7 +64,8 @@ annotate.lipid.species <- function(input_names){
 		if(class_name[i] %in% c("TG", "TAG")){
 			# For TAG class with three tails
 			structure_anno[i,2] <- temp[[i]][2]
-			structure_anno[i,3] <- temp[[i]][4]
+			structure_anno[i,3] <- gsub("[A-z]*", "", temp[[i]][4])
+			structure_anno[i,4] <- temp[[i]][3]
 			fa_dbs <- as.numeric(temp[[i]][5])
 			if(fa_dbs > 1 | (as.numeric(structure_anno[i,4]) - fa_dbs) > 2){
 				structure_anno[i,5] <- "PUFA"
@@ -82,7 +83,7 @@ annotate.lipid.species <- function(input_names){
 			# For PE classes with two chains and extra character for PE-P and PE-O
 			structure_anno[i,1] <- paste("PE", temp[[i]][2], sep = ".")
 			structure_anno[i,2] <- sum(as.numeric(temp[[i]][3]), as.numeric(temp[[i]][5]))
-				structure_anno[i,3] <- max(as.numeric(temp[[i]][3]), as.numeric(temp[[i]][5]))
+			structure_anno[i,3] <- max(as.numeric(temp[[i]][3]), as.numeric(temp[[i]][5]))
 			structure_anno[i,4] <- as.numeric(temp[[i]][4]) + as.numeric(temp[[i]][6])
 			if(as.numeric(temp[[i]][4]) > 1 | as.numeric(temp[[i]][6]) > 1){
 				structure_anno[i,5] <- "PUFA"
