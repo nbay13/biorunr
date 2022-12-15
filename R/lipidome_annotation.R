@@ -55,8 +55,8 @@ annotate.lipid.species <- function(input_names){
 	} 
 	
 	# pre-define data.frame and fill with entries using for loop
-	structure_anno <- data.frame(matrix(nrow = length(class_name), ncol = 4))
-	colnames(structure_anno) <- c("Class","Longest.Carbon", "Total.DBs", "Saturation")
+	structure_anno <- data.frame(matrix(nrow = length(class_name), ncol = 5))
+	colnames(structure_anno) <- c("Class","Total.Carbons", "Longest.Tail", "Total.DBs", "Saturation")
 	structure_anno[,1] <- class_name
 	# This script works based on specific class names. If new input data has different or new 
 	# class names than the script or names must be edited.
@@ -64,59 +64,62 @@ annotate.lipid.species <- function(input_names){
 		if(class_name[i] %in% c("TG", "TAG")){
 			# For TAG class with three tails
 			structure_anno[i,2] <- temp[[i]][2]
-			structure_anno[i,3] <- temp[[i]][3]
+			structure_anno[i,3] <- temp[[i]][4]
 			fa_dbs <- as.numeric(temp[[i]][5])
 			if(fa_dbs > 1 | (as.numeric(structure_anno[i,3]) - fa_dbs) > 2){
-				structure_anno[i,4] <- "PUFA"
+				structure_anno[i,5] <- "PUFA"
 			} else if(fa_dbs == 1 & (as.numeric(structure_anno[i,3]) - fa_dbs) < 2){
-				structure_anno[i,4] <- "MUFA"
+				structure_anno[i,5] <- "MUFA"
 			} else if(fa_dbs == 0 & as.numeric(structure_anno[i,3]) == 1){
-				structure_anno[i,4] <- "MUFA"
+				structure_anno[i,5] <- "MUFA"
 			}
 			 else if(fa_dbs == 0 & as.numeric(structure_anno[i,3]) == 0){
-				structure_anno[i,4] <- "SFA"
+				structure_anno[i,5] <- "SFA"
 			} else {
-				structure_anno[i,4] <- "Unknown"
+				structure_anno[i,5] <- "Unknown"
 			}
 		} else if(class_name[i] == "PE" & temp[[i]][2] %in% c("P","O")){
 			# For PE classes with two chains and extra character for PE-P and PE-O
 			structure_anno[i,1] <- paste("PE", temp[[i]][2], sep = ".")
-			structure_anno[i,2] <- max(as.numeric(temp[[i]][3]), as.numeric(temp[[i]][5]))
-			structure_anno[i,3] <- as.numeric(temp[[i]][4]) + as.numeric(temp[[i]][6])
+			structure_anno[i,2] <- sum(as.numeric(temp[[i]][3]), as.numeric(temp[[i]][5]))
+				structure_anno[i,3] <- max(as.numeric(temp[[i]][3]), as.numeric(temp[[i]][5]))
+			structure_anno[i,4] <- as.numeric(temp[[i]][4]) + as.numeric(temp[[i]][6])
 			if(as.numeric(temp[[i]][4]) > 1 | as.numeric(temp[[i]][6]) > 1){
-				structure_anno[i,4] <- "PUFA"
+				structure_anno[i,5] <- "PUFA"
 			} else if(as.numeric(temp[[i]][4]) == 1 | as.numeric(temp[[i]][6]) == 1){
-				structure_anno[i,4] <- "MUFA"
+				structure_anno[i,5] <- "MUFA"
 			} else {
-				structure_anno[i,4] <- "SFA"
+				structure_anno[i,5] <- "SFA"
 			}
 		} else if(class_name[i] %in% two_chain){
 			# For other classes with two chains
-			structure_anno[i,2] <- max(as.numeric(gsub("d", "", temp[[i]][2])), as.numeric(temp[[i]][4]))
-			structure_anno[i,3] <- as.numeric(temp[[i]][3]) + as.numeric(temp[[i]][5])
+			structure_anno[i,2] <- sum(as.numeric(gsub("d", "", temp[[i]][2])), as.numeric(temp[[i]][4]))
+			structure_anno[i,3] <- max(as.numeric(gsub("d", "", temp[[i]][2])), as.numeric(temp[[i]][4]))
+			structure_anno[i,4] <- as.numeric(temp[[i]][3]) + as.numeric(temp[[i]][5])
 			if(as.numeric(temp[[i]][3]) > 1 | as.numeric(temp[[i]][5]) > 1){
-				structure_anno[i,4] <- "PUFA"
+				structure_anno[i,5] <- "PUFA"
 			} else if(as.numeric(temp[[i]][3]) == 1 | as.numeric(temp[[i]][5]) == 1){
-				structure_anno[i,4] <- "MUFA"
+				structure_anno[i,5] <- "MUFA"
 			} else {
-				structure_anno[i,4] <- "SFA"
+				structure_anno[i,5] <- "SFA"
 			}
 		} else {
 			# For classes with one chain
 			structure_anno[i,2] <- temp[[i]][2]
-			structure_anno[i,3] <- temp[[i]][3]
+			structure_anno[i,3] <- temp[[i]][2]
+			structure_anno[i,4] <- temp[[i]][3]
 			if(as.numeric(temp[[i]][3]) > 1){
-				structure_anno[i,4] <- "PUFA"
+				structure_anno[i,5] <- "PUFA"
 			} else if(as.numeric(temp[[i]][3]) == 1){
-				structure_anno[i,4] <- "MUFA"
+				structure_anno[i,5] <- "MUFA"
 			} else {
-				structure_anno[i,4] <- "SFA"
+				structure_anno[i,5] <- "SFA"
 			}
 		}
 	}
 	#rownames(structure_anno) <- lipid_names
 	structure_anno$Species <- input_names
-	structure_anno[,2:3] <- apply(structure_anno[,2:3], 2, as.numeric)
+	structure_anno[,2:4] <- apply(structure_anno[,2:4], 2, as.numeric)
 	structure_anno$Category <- get.lipid.category(structure_anno$Class)
-	return(structure_anno[,c("Species", "Class", "Category", "Longest.Carbon", "Total.DBs", "Saturation")])
+	return(structure_anno[,c("Species", "Class", "Category", "Total.Carbons", "Longest.Tail", "Total.DBs", "Saturation")])
 }
