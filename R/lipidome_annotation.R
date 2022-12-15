@@ -27,6 +27,21 @@ get.lipid.category <- function(species){
 	})))
 }
 
+#' @export get.chain.group
+get.chain.group <- function(lengths){
+	group_list <- list(
+		"SCFA" = as.character(c(1:4)), 
+		"MCFA" = as.character(c(5:12)), 
+		"LCFA" = as.character(c(13:21)), 
+		"VLFA" = as.character(c(22:32))
+	)
+	inv_list <- inverse.list(group_list)
+	return(unlist(sapply(lengths, function(x){
+		if(x %in% names(inv_list)) inv_list[[as.character(x)]]
+		else NA
+	})))
+}
+
 #' @export annotate.lipid.species
 annotate.lipid.species <- function(input_names){
 	# set up annotation vectors and lists
@@ -122,5 +137,6 @@ annotate.lipid.species <- function(input_names){
 	structure_anno$Species <- input_names
 	structure_anno[,2:4] <- apply(structure_anno[,2:4], 2, as.numeric)
 	structure_anno$Category <- get.lipid.category(structure_anno$Class)
-	return(structure_anno[,c("Species", "Class", "Category", "Total.Carbons", "Longest.Tail", "Total.DBs", "Saturation")])
+	structure_anno$Chain <- get.chain.group(structure_anno$Longest.Tail)
+	return(structure_anno[,c("Species", "Class", "Category", "Total.Carbons", "Longest.Tail", "Total.DBs", "Saturation", "Chain")])
 }
