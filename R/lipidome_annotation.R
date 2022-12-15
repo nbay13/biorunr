@@ -66,14 +66,14 @@ annotate.lipid.species <- function(input_names){
 			structure_anno[i,2] <- temp[[i]][2]
 			structure_anno[i,3] <- temp[[i]][4]
 			fa_dbs <- as.numeric(temp[[i]][5])
-			if(fa_dbs > 1 | (as.numeric(structure_anno[i,3]) - fa_dbs) > 2){
+			if(fa_dbs > 1 | (as.numeric(structure_anno[i,4]) - fa_dbs) > 2){
 				structure_anno[i,5] <- "PUFA"
-			} else if(fa_dbs == 1 & (as.numeric(structure_anno[i,3]) - fa_dbs) < 2){
+			} else if(fa_dbs == 1 & (as.numeric(structure_anno[i,4]) - fa_dbs) < 2){
 				structure_anno[i,5] <- "MUFA"
-			} else if(fa_dbs == 0 & as.numeric(structure_anno[i,3]) == 1){
+			} else if(fa_dbs == 0 & as.numeric(structure_anno[i,4]) == 1){
 				structure_anno[i,5] <- "MUFA"
 			}
-			 else if(fa_dbs == 0 & as.numeric(structure_anno[i,3]) == 0){
+			 else if(fa_dbs == 0 & as.numeric(structure_anno[i,4]) == 0){
 				structure_anno[i,5] <- "SFA"
 			} else {
 				structure_anno[i,5] <- "Unknown"
