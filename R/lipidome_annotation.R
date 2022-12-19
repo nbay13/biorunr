@@ -140,3 +140,72 @@ annotate.lipid.species <- function(input_names){
 	structure_anno$Chain <- get.chain.group(structure_anno$Longest.Tail)
 	return(structure_anno[,c("Species", "Class", "Category", "Total.Carbons", "Longest.Tail", "Total.DBs", "Saturation", "Chain")])
 }
+
+#' @export get.acyl.tails
+get.acyl.tails <- function(input_names){
+	# set up annotation vectors and lists
+	two_chain <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "DAG", "LacCER", "SM", "HexCER", "Cer")
+	category_list <- list(
+		"Sterol" = c("CE"), 
+		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM"), 
+		"Glycerolipid" = c("DG", "TG", "DAG", "TAG"), 
+		"Fatty.Acyl" = c("FA"),
+		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE"), 
+		"Ether" = c("PE.O", "PE.P")
+	)
+	# clean up lipid name format
+	lipid_names <- gsub(" |-|/|\\\\|:|;|_|~", "\\.", input_names)
+	# split the details in the species names by periods
+	temp <- strsplit(lipid_names, "\\.")
+	# remove numbers from the class names
+	class_name <- unlist(lapply(temp, function(x){
+		return(gsub("[0-9]*","", x[[1]]))
+	}))
+	if(!all(class_name %in% unlist(category_list))){
+		missing <- class_name[!class_name %in% unlist(category_list)]
+		w.missing <- which(!class_name %in% unlist(category_list))
+		prnt <- paste(w.missing, missing, sep = ": ", collapse = "\n")
+		stop(paste("Unknown lipid classes...\n", prnt))
+	} 
+	
+	# pre-define data.frame and fill with entries using for loop
+	structure_anno <- data.frame(matrix(nrow = length(class_name), ncol = 3))
+	extras <- list()
+	colnames(structure_anno) <- c("Class","Total.Carbons", "Total.DBs")
+	structure_anno[,1] <- class_name
+	# This script works based on specific class names. If new input data has different or new 
+	# class names than the script or names must be edited.
+	for(i in 1:length(class_name)){
+		if(class_name[i] %in% c("TG", "TAG")){
+			# For TAG class with three tails
+			structure_anno[i,2] <- gsub("[A-z]*", "", temp[[i]][4])
+			fa_dbs <- as.numeric(temp[[i]][5])
+			structure_anno[i,3] <- fa_dbs
+		} else if(class_name[i] == "PE" & temp[[i]][2] %in% c("P","O")){
+			# For PE classes with two chains and extra character for PE-P and PE-O
+			structure_anno[i,1] <- paste("PE", temp[[i]][2], sep = ".")
+			structure_anno[i,2] <- as.numeric(temp[[i]][3]) 
+			extras[[as.character(i)]] <- c(paste("PE", temp[[i]][2], sep = "."), as.numeric(temp[[i]][5]), as.numeric(temp[[i]][6]))
+			structure_anno[i,3] <- as.numeric(temp[[i]][4])
+		} else if(class_name[i] %in% two_chain){
+			# For other classes with two chains
+			structure_anno[i,2] <- as.numeric(gsub("d", "", temp[[i]][2]))
+			extras[[as.character(i)]] <- c(structure_anno[i,1], as.numeric(temp[[i]][4]), as.numeric(temp[[i]][5]))
+			structure_anno[i,3] <- as.numeric(temp[[i]][3])
+		} else {
+			# For classes with one chain
+			structure_anno[i,2] <- temp[[i]][2]
+			structure_anno[i,3] <- temp[[i]][3]
+		}
+	}
+	#rownames(structure_anno) <- lipid_names
+	extra_df <- data.frame(t(as.data.frame(extras)))
+	colnames(extra_df) <- colnames(structure_anno)
+	extra_df$Species <- input_names[as.numeric(names(extras))]
+	structure_anno$Species <- input_names
+	structure_anno <- data.frame(rbind(structure_anno, extra_df))
+	structure_anno[,2:3] <- apply(structure_anno[,2:3], 2, as.numeric)
+	structure_anno$Category <- get.lipid.category(structure_anno$Class)
+	structure_anno$Chain <- get.chain.group(structure_anno$Total.Carbons)
+	return(structure_anno[order(structure_anno$Species),c("Species", "Class", "Category", "Total.Carbons", "Total.DBs", "Chain")])
+}
