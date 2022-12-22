@@ -141,6 +141,19 @@ annotate.lipid.species <- function(input_names){
 	return(structure_anno[,c("Species", "Class", "Category", "Total.Carbons", "Longest.Tail", "Total.DBs", "Saturation", "Chain")])
 }
 
+#' @export get.tail.saturation
+get.tail.saturation <- function(n_db){
+	if(n_db == 0){
+		return("SFA")
+	} else if(n_db == 1) {
+		return("MUFA")
+	} else if(n_db > 1) {
+		return("PUFA")
+	} else {
+		stop("Unknown value...")
+	}
+}
+
 #' @export get.acyl.tails
 get.acyl.tails <- function(input_names){
 	# set up annotation vectors and lists
@@ -207,5 +220,6 @@ get.acyl.tails <- function(input_names){
 	structure_anno[,2:3] <- apply(structure_anno[,2:3], 2, as.numeric)
 	structure_anno$Category <- get.lipid.category(structure_anno$Class)
 	structure_anno$Chain <- get.chain.group(structure_anno$Total.Carbons)
-	return(structure_anno[order(structure_anno$Species),c("Species", "Class", "Category", "Total.Carbons", "Total.DBs", "Chain")])
+	structure_anno$Saturation <- get.tail.saturation(structure_anno$Total.DBs)
+	return(structure_anno[order(structure_anno$Species),c("Species", "Class", "Category", "Total.Carbons", "Chain", "Total.DBs", "Saturation")])
 }
