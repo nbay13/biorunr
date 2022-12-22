@@ -143,15 +143,12 @@ annotate.lipid.species <- function(input_names){
 
 #' @export get.tail.saturation
 get.tail.saturation <- function(n_db){
-	if(n_db == 0){
-		return("SFA")
-	} else if(n_db == 1) {
-		return("MUFA")
-	} else if(n_db > 1) {
-		return("PUFA")
-	} else {
-		stop("Unknown value...")
-	}
+	if(any(!is.numeric(n_db)) | any(n_db < 0) | any(!round(n_db) == n_db)) stop("Not positive whole numbers")
+	res <- n_db
+	res[n_db == 0] <- "SFA"
+	res[n_db == 1] <- "MUFA"
+	res[n_db > 1] <- "PUFA"
+	return(res)
 }
 
 #' @export get.acyl.tails
