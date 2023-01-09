@@ -14,7 +14,7 @@ inverse.list <- function(x){
 get.lipid.category <- function(species){
 	category_list <- list(
 		"Sterol" = c("CE"), 
-		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM"), 
+		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM", "DCer"), 
 		"Glycerolipid" = c("DG", "TG", "DAG", "TAG"), 
 		"Fatty.Acyl" = c("FA"),
 		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE"), 
@@ -48,7 +48,7 @@ annotate.lipid.species <- function(input_names){
 	two_chain <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "DAG", "LacCER", "SM", "HexCER", "Cer")
 	category_list <- list(
 		"Sterol" = c("CE"), 
-		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM"), 
+		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM", "DCer"), 
 		"Glycerolipid" = c("DG", "TG", "DAG", "TAG"), 
 		"Fatty.Acyl" = c("FA"),
 		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE"), 
@@ -138,6 +138,7 @@ annotate.lipid.species <- function(input_names){
 	structure_anno[,2:4] <- apply(structure_anno[,2:4], 2, as.numeric)
 	structure_anno$Category <- get.lipid.category(structure_anno$Class)
 	structure_anno$Chain <- get.chain.group(structure_anno$Longest.Tail)
+	structure_anno$Class[structure_anno$Class == "Cer" & structure_anno$Total.DBs > 0] <- "DCer"
 	return(structure_anno[,c("Species", "Class", "Category", "Total.Carbons", "Longest.Tail", "Total.DBs", "Saturation", "Chain")])
 }
 
@@ -157,7 +158,7 @@ get.acyl.tails <- function(input_names){
 	two_chain <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "DAG", "LacCER", "SM", "HexCER", "Cer")
 	category_list <- list(
 		"Sterol" = c("CE"), 
-		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM"), 
+		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM", "DCer"), 
 		"Glycerolipid" = c("DG", "TG", "DAG", "TAG"), 
 		"Fatty.Acyl" = c("FA"),
 		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE"), 
@@ -218,5 +219,6 @@ get.acyl.tails <- function(input_names){
 	structure_anno$Category <- get.lipid.category(structure_anno$Class)
 	structure_anno$Chain <- get.chain.group(structure_anno$Total.Carbons)
 	structure_anno$Saturation <- get.tail.saturation(structure_anno$Total.DBs)
+	structure_anno$Class[structure_anno$Class == "Cer" & structure_anno$Total.DBs > 0] <- "DCer"
 	return(structure_anno[order(structure_anno$Species),c("Species", "Class", "Category", "Total.Carbons", "Chain", "Total.DBs", "Saturation")])
 }
