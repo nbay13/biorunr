@@ -14,7 +14,7 @@ inverse.list <- function(x){
 get.lipid.category <- function(species){
 	category_list <- list(
 		"Sterol" = c("CE"), 
-		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM", "DCer"), 
+		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM", "dhCer"), 
 		"Glycerolipid" = c("DG", "TG", "DAG", "TAG"), 
 		"Fatty.Acyl" = c("FA"),
 		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE"), 
@@ -45,10 +45,10 @@ get.chain.group <- function(lengths){
 #' @export annotate.lipid.species
 annotate.lipid.species <- function(input_names){
 	# set up annotation vectors and lists
-	two_chain <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "DAG", "LacCER", "SM", "HexCER", "Cer", "DCer")
+	two_chain <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "DAG", "LacCER", "SM", "HexCER", "Cer", "dhCer")
 	category_list <- list(
 		"Sterol" = c("CE"), 
-		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM", "DCer"), 
+		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM", "dhCer"), 
 		"Glycerolipid" = c("DG", "TG", "DAG", "TAG"), 
 		"Fatty.Acyl" = c("FA"),
 		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE"), 
@@ -112,6 +112,7 @@ annotate.lipid.species <- function(input_names){
 			structure_anno[i,2] <- sum(as.numeric(gsub("d", "", temp[[i]][2])), as.numeric(temp[[i]][4]))
 			structure_anno[i,3] <- max(as.numeric(gsub("d", "", temp[[i]][2])), as.numeric(temp[[i]][4]))
 			structure_anno[i,4] <- as.numeric(temp[[i]][3]) + as.numeric(temp[[i]][5])
+			if(structure_anno[i,1] == "Cer" & as.numeric(temp[[i]][3]) == 0) structure_anno[i,1] <- "dhCer"
 			if(as.numeric(temp[[i]][3]) > 1 | as.numeric(temp[[i]][5]) > 1){
 				structure_anno[i,5] <- "PUFA"
 			} else if(as.numeric(temp[[i]][3]) == 1 | as.numeric(temp[[i]][5]) == 1){
@@ -138,7 +139,6 @@ annotate.lipid.species <- function(input_names){
 	structure_anno[,2:4] <- apply(structure_anno[,2:4], 2, as.numeric)
 	structure_anno$Category <- get.lipid.category(structure_anno$Class)
 	structure_anno$Chain <- get.chain.group(structure_anno$Longest.Tail)
-	structure_anno[structure_anno$Class == "Cer" & structure_anno$Total.DBs == 0, "Class"] <- "DCer"
 	return(structure_anno[,c("Species", "Class", "Category", "Total.Carbons", "Longest.Tail", "Total.DBs", "Saturation", "Chain")])
 }
 
@@ -155,10 +155,10 @@ get.tail.saturation <- function(n_db){
 #' @export get.acyl.tails
 get.acyl.tails <- function(input_names){
 	# set up annotation vectors and lists
-	two_chain <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "DAG", "LacCER", "SM", "HexCER", "Cer", "DCer")
+	two_chain <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "DAG", "LacCER", "SM", "HexCER", "Cer", "dhCer")
 	category_list <- list(
 		"Sterol" = c("CE"), 
-		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM", "DCer"), 
+		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM", "dhCer"), 
 		"Glycerolipid" = c("DG", "TG", "DAG", "TAG"), 
 		"Fatty.Acyl" = c("FA"),
 		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE"), 
@@ -201,7 +201,7 @@ get.acyl.tails <- function(input_names){
 		} else if(class_name[i] %in% two_chain){
 			# For other classes with two chains
 			structure_anno[i,2] <- as.numeric(gsub("d", "", temp[[i]][2]))
-			if(structure_anno[i,1] == "Cer" & max(as.numeric(temp[[i]][5]), as.numeric(temp[[i]][3])) == 0) structure_anno[i,1] <- "DCer"
+			if(structure_anno[i,1] == "Cer" & as.numeric(temp[[i]][3]) == 0) structure_anno[i,1] <- "dhCer"
 			extras[[as.character(i)]] <- c(structure_anno[i,1], as.numeric(temp[[i]][4]), as.numeric(temp[[i]][5]))
 			structure_anno[i,3] <- as.numeric(temp[[i]][3])
 		} else {
