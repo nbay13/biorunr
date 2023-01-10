@@ -138,7 +138,7 @@ annotate.lipid.species <- function(input_names){
 	structure_anno[,2:4] <- apply(structure_anno[,2:4], 2, as.numeric)
 	structure_anno$Category <- get.lipid.category(structure_anno$Class)
 	structure_anno$Chain <- get.chain.group(structure_anno$Longest.Tail)
-	structure_anno$Class[structure_anno$Class == "Cer" & structure_anno$Total.DBs == 0] <- "DCer"
+	structure_anno[structure_anno$Class == "Cer" & structure_anno$Total.DBs == 0, "Class"] <- "DCer"
 	return(structure_anno[,c("Species", "Class", "Category", "Total.Carbons", "Longest.Tail", "Total.DBs", "Saturation", "Chain")])
 }
 
@@ -201,7 +201,7 @@ get.acyl.tails <- function(input_names){
 		} else if(class_name[i] %in% two_chain){
 			# For other classes with two chains
 			structure_anno[i,2] <- as.numeric(gsub("d", "", temp[[i]][2]))
-			if(structure_anno[i,2] == "Cer" & max(as.numeric(temp[[i]][5]), as.numeric(temp[[i]][3])) == 0) structure_anno[i,2] <- "DCer"
+			if(structure_anno[i,1] == "Cer" & max(as.numeric(temp[[i]][5]), as.numeric(temp[[i]][3])) == 0) structure_anno[i,1] <- "DCer"
 			extras[[as.character(i)]] <- c(structure_anno[i,1], as.numeric(temp[[i]][4]), as.numeric(temp[[i]][5]))
 			structure_anno[i,3] <- as.numeric(temp[[i]][3])
 		} else {
