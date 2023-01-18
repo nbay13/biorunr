@@ -249,7 +249,7 @@ abundance.to.percent.total <- function(in_filename, out_filename, directory, ann
 		t() %>% data.frame()
 	# Check if averaging affected the sum, and re-calculate percent totals if necessary
 	if(any(colSums(percent_total) != 100)){
-		cat("Some columns no longer sum to 1 after averaging replicates, re-calculating percent total...\n")
+		cat("Some columns no longer sum to 100 after averaging replicates, re-calculating percent total...\n")
 		percent_total <- 
 			temp %>% 
 			t() %>% data.frame() %>% 
