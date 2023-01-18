@@ -13,6 +13,7 @@ An R package for running bioinformatic analysis. Includes wrapper functions for 
  - msigdbr
  - org.Hs.eg.db
  - RColorBrewer
+ - tibble
  - topGO
 
 ## Installation

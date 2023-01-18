@@ -21,5 +21,6 @@ Imports:
     msigdbr,
     org.Hs.eg.db,
     RColorBrewer,
+    tibble,
     topGO
 

@@ -222,3 +222,46 @@ get.acyl.tails <- function(input_names){
 	structure_anno$Saturation <- get.tail.saturation(structure_anno$Total.DBs)
 	return(structure_anno[order(structure_anno$Species),c("Species", "Class", "Category", "Total.Carbons", "Chain", "Total.DBs", "Saturation")])
 }
+
+#' @export abundance.to.percent.total
+abundance.to.percent.total <- function(in_filename, out_filename, directory, anno_column){
+	# read in file
+	tbl <- read.table(paste0(directory, in_filename), sep = "\t", stringsAsFactors = F, header = T, fill = T)
+	# split into annotation metadata and data
+	anno <- tbl[,1:anno_column]
+	data <- tbl[,(anno_column+1):ncol(tbl)]
+	data[is.na(data)] <- 0
+	# Calculate initial percent total values
+	temp <- 
+		data %>% 
+	    t() %>% data.frame() %>%
+	    dplyr::summarise(dplyr::across(colnames(.), ~./sum(.)*100)) %>%
+	    magrittr::set_rownames(colnames(data)) %>%
+	    dplyr::rename(setNames(anno$GroupName, colnames(.)))
+	# Average replicates
+	percent_total <- 
+		temp %>% 
+		t() %>% data.frame() %>% 
+		dplyr::mutate(Sample = colnames(temp)) %>% 
+		dplyr::group_by(Sample) %>% 
+		dplyr::summarise(dplyr::across(setdiff(colnames(.), "Sample"), mean)) %>% 
+		tibble::column_to_rownames('Sample') %>% 
+		t() %>% data.frame()
+	# Check if averaging affected the sum, and re-calculate percent totals if necessary
+	if(any(colSums(percent_total) != 100)){
+		cat("Some columns no longer sum to 1 after averaging, re-calculating percent total...\n")
+		percent_total <- 
+			temp %>% 
+			t() %>% data.frame() %>% 
+			dplyr::mutate(Sample = colnames(temp)) %>% 
+			dplyr::group_by(Sample) %>% 
+			dplyr::summarise(dplyr::across(setdiff(colnames(.), "Sample"), mean)) %>% 
+			tibble::column_to_rownames('Sample') %>% 
+			t() %>% data.frame() %>%
+			dplyr::summarise(dplyr::across(colnames(.), ~./sum(.)*100)) %>% 
+			magrittr::set_rownames(colnames(data))
+	}
+	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
+	write.table(percent_total, paste0(directory, out_filename), sep = "\t", quote = F, row.names = T, col.names = NA)
+	return(percent_total)
+}
