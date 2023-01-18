@@ -237,7 +237,7 @@ abundance.to.percent.total <- function(in_filename, out_filename, directory, ann
 	    t() %>% data.frame() %>%
 	    dplyr::summarise(dplyr::across(colnames(.), ~./sum(.)*100)) %>%
 	    magrittr::set_rownames(colnames(data)) %>%
-	    dplyr::rename(setNames(anno$GroupName, colnames(.)))
+	    plyr::rename(setNames(anno$GroupName, colnames(.)), warn_duplicated = F)
 	# Average replicates
 	percent_total <- 
 		temp %>% 
