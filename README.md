@@ -9,6 +9,7 @@ An R package for running bioinformatic analysis. Includes wrapper functions for 
  - fgsea
  - ggplot2
  - GSVA
+ - Hmisc
  - magrittr
  - msigdbr
  - org.Hs.eg.db
