@@ -17,6 +17,7 @@ Imports:
     fgsea,
     ggplot2,
     GSVA,
+    Hmisc,
     magrittr,
     msigdbr,
     org.Hs.eg.db,

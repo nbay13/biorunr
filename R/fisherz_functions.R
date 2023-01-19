@@ -15,16 +15,19 @@ variance.filter <- function(x, col = F){
 }
 
 #' @export correlate.by.group
-correlate.by.group <- function(mat_a, mat_b, labels, transpose = T){
+correlate.by.group <- function(mat_a, mat_b, labels, transpose = T, p_value = F){
 	if(!is.factor(labels)) labels <- factor(labels)
 	cor_list <- list()
 	for(lev in levels(labels)){
 		prep_a <- mat_a[,labels == lev]
 		prep_b <- mat_b[,labels == lev]
-		if(transpose) cor_list[[lev]] <- cor(t(variance.filter(prep_a)), t(variance.filter(prep_b)))
-		else cor_list[[lev]] <- cor(variance.filter(prep_a), variance.filter(prep_b))
+		if(transpose) cor_list[[lev]] <- Hmisc::rcorr(t(variance.filter(prep_a)), t(variance.filter(prep_b)))
+		else cor_list[[lev]] <- Hmisc::rcorr(variance.filter(prep_a), variance.filter(prep_b))
 	}
-	return(cor_list)
+	if(p_value == T) mat = "P"
+	else mat = "r"
+	final_list <- lapply(cor_list, "[[", mat)
+	return(final_list)
 }
 
 #from psych package, included here to avoid dependencies
