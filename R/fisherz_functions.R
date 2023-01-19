@@ -15,19 +15,16 @@ variance.filter <- function(x, col = F){
 }
 
 #' @export correlate.by.group
-correlate.by.group <- function(mat_a, mat_b, labels, transpose = T, p_value = F){
+correlate.by.group <- function(mat_a, mat_b, labels, transpose = T){
 	if(!is.factor(labels)) labels <- factor(labels)
 	cor_list <- list()
 	for(lev in levels(labels)){
 		prep_a <- mat_a[,labels == lev]
 		prep_b <- mat_b[,labels == lev]
-		if(transpose) cor_list[[lev]] <- Hmisc::rcorr(t(variance.filter(prep_a)), t(variance.filter(prep_b)))
-		else cor_list[[lev]] <- Hmisc::rcorr(variance.filter(prep_a), variance.filter(prep_b))
+		if(transpose) cor_list[[lev]] <- cor(t(variance.filter(prep_a)), t(variance.filter(prep_b)))
+		else cor_list[[lev]] <- cor(variance.filter(prep_a), variance.filter(prep_b))
 	}
-	if(p_value == T) mat = "P"
-	else mat = "r"
-	final_list <- lapply(cor_list, "[[", mat)
-	return(final_list)
+	return(cor_list)
 }
 
 #from psych package, included here to avoid dependencies
@@ -43,8 +40,15 @@ fisherz2r <- function(z) (exp(2*z)-1)/(1+exp(2*z))
 r2t <- function(r, n) r * sqrt((n - 2)/(1 - r^2))
 
 #' @export fisherz.avg.cor
-fisherz.avg.cor <- function(cor_list, sizes = NULL, return_z = F){
-	fisher_list <- lapply(cor_list, fisherz)
+fisherz.avg.cor <- function(cor_list, sizes = NULL, return_z = F, digits = 2){
+	fisher_list <- lapply(cor_list, function(x) {
+		fisherz(round(x, digits))
+	})
+	fisher_list <- lapply(fisher_list, function(x) {
+		x[(is.infinite(x) & x > 0) | is.nan(x)] <- fisherz(1 - 5*10^-(digits+1))
+		x[is.infinite(x) & x < 0] <- fisherz(-1 + 5*10^-(digits+1))
+		x
+	})
 	if(!is.null(sizes)){
 		if(length(sizes) != length(cor_list)) stop("Number of sizes does not equal number of correlation matrices in list")
 		else {
@@ -54,7 +58,7 @@ fisherz.avg.cor <- function(cor_list, sizes = NULL, return_z = F){
 			avg <- Reduce("+", fisher_list)
 		}
 	} else avg <- Reduce("+", fisher_list) / length(fisher_list)
-	converted <- fisherz2r(avg)
+	converted <- round(fisherz2r(avg), digits)
 	# R = 1 causes fisher's to equal Inf, leading to NAs
 	# R = -1 causes -Inf which is still handled correctly (returns cor = -1)
 	converted[is.na(converted)] <- 1
