@@ -226,11 +226,14 @@ get.acyl.tails <- function(input_names){
 #' @export abundance.to.percent.total
 abundance.to.percent.total <- function(in_filename, out_filename, directory, anno_column, id_var = "Short.ID"){
 	# read in file
-	tbl <- read.table(paste0(directory, in_filename), sep = "\t", stringsAsFactors = F, header = T, fill = T)
+	tbl <- read.table(paste0(directory, in_filename), sep = "\t", stringsAsFactors = F, header = F, fill = T)
 	# split into annotation metadata and data
-	anno <- tbl[,1:anno_column]
-	data <- tbl[,(anno_column+1):ncol(tbl)]
+	lipids <- as.character(tbl[1,(anno_column+1):ncol(tbl)])
+	anno <- tbl[-1,1:anno_column]
+	data <- data.matrix(tbl[-1,(anno_column+1):ncol(tbl)])
 	data[is.na(data)] <- 0
+	colnames(data) <- lipids
+	colnames(anno) <- tbl[1,1:anno_column]
 	# Calculate initial percent total values
 	temp <- 
 		data %>% 
@@ -262,6 +265,7 @@ abundance.to.percent.total <- function(in_filename, out_filename, directory, ann
 			magrittr::set_rownames(colnames(data))
 	}
 	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
-	write.table(percent_total, paste0(directory, out_filename), sep = "\t", quote = F, row.names = T, col.names = NA)
-	return(percent_total)
+	final_output <- data.frame(Species = lipids, percent_total)
+	write.table(final_output, paste0(directory, out_filename), sep = "\t", quote = F, row.names = F, col.names = T)
+	return(final_output)
 }
