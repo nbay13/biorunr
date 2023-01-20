@@ -224,7 +224,7 @@ get.acyl.tails <- function(input_names){
 }
 
 #' @export abundance.to.percent.total
-abundance.to.percent.total <- function(in_filename, out_filename, directory, anno_column){
+abundance.to.percent.total <- function(in_filename, out_filename, directory, anno_column, id_var = "Short.ID"){
 	# read in file
 	tbl <- read.table(paste0(directory, in_filename), sep = "\t", stringsAsFactors = F, header = T, fill = T)
 	# split into annotation metadata and data
@@ -237,7 +237,7 @@ abundance.to.percent.total <- function(in_filename, out_filename, directory, ann
 	    t() %>% data.frame() %>%
 	    dplyr::summarise(dplyr::across(colnames(.), ~./sum(.)*100)) %>%
 	    magrittr::set_rownames(colnames(data)) %>%
-	    plyr::rename(setNames(anno$GroupName, colnames(.)), warn_duplicated = F)
+	    plyr::rename(setNames(anno[[id_var]], colnames(.)), warn_duplicated = F)
 	# Average replicates
 	percent_total <- 
 		temp %>% 
@@ -249,16 +249,16 @@ abundance.to.percent.total <- function(in_filename, out_filename, directory, ann
 		t() %>% data.frame()
 	# Check if averaging affected the sum, and re-calculate percent totals if necessary
 	if(any(colSums(percent_total) != 100)){
-		cat("Some columns no longer sum to 100 after averaging replicates, re-calculating percent total...\n")
+		cat("Some columns no longer sum to 1 after averaging, re-calculating percent total...\n")
 		percent_total <- 
 			temp %>% 
 			t() %>% data.frame() %>% 
-			dplyr::mutate(Sample = colnames(temp)) %>% 
-			dplyr::group_by(Sample) %>% 
-			dplyr::summarise(dplyr::across(setdiff(colnames(.), "Sample"), mean)) %>% 
+			mutate(Sample = colnames(temp)) %>% 
+			group_by(Sample) %>% 
+			summarise(across(setdiff(colnames(.), "Sample"), mean)) %>% 
 			tibble::column_to_rownames('Sample') %>% 
 			t() %>% data.frame() %>%
-			dplyr::summarise(dplyr::across(colnames(.), ~./sum(.)*100)) %>% 
+			summarise(across(colnames(.), ~./sum(.)*100)) %>% 
 			magrittr::set_rownames(colnames(data))
 	}
 	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
