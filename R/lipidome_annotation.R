@@ -267,7 +267,8 @@ abundance.to.percent.total <- function(in_filename, out_filename, directory, ann
 			magrittr::set_rownames(colnames(data))
 	}
 	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
-	final_output <- data.frame(Species = lipids, percent_total)
+	lipid_anno <- annotate.lipid.species(lipids)
+	final_output <- data.frame(Species = lipids, lipid_anno[,colnames(lipid_anno) != "Species"], percent_total)
 	write.table(final_output, paste0(directory, out_filename), sep = "\t", quote = F, row.names = F, col.names = T)
 	return(final_output)
 }
@@ -279,22 +280,25 @@ total.to.percent.class <- function(lipid_mat, lipid_anno, out_filename, director
 		combined_df %>% 
 		dplyr::group_by(Class) %>% 
 		dplyr::summarise(Species = Species, dplyr::across(colnames(lipid_mat), list(~./sum(.)*100), .names = "{.col}")) %>% 
-		dplyr::ungroup() %>% dplyr::select(-Class) %>% data.frame()
-		rownames(class_df) <- combined_df$Species
+		dplyr::ungroup() %>% data.frame()
+	rownames(class_df) <- class_df$Species
+	class_df[is.na(class_df)] <- 0
 	# reorder to match input, group_by will sort alphabetically
 	class_df <- class_df[rownames(combined_df),]
+	class_df <- data.frame(class_df, lipid_anno[,colnames(lipid_anno != "Species")])
+	class_df <- class_df[,c(colnames(lipid_anno), colnames(lipid_mat))]
 	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
 	write.table(class_df, paste0(directory, out_filename), sep = "\t", quote = F, row.names = F, col.names = T)
 	return(class_df)
 }
 
-
 #' @export acyl.tail.to.bulk.species
 acyl.tail.to.bulk.species <- function(lipid_mat, lipid_anno, out_filename, directory){
 	combined_df <- data.frame(lipid_anno, lipid_mat)
 	combined_df[combined_df$Class %in% c("TG", "TAG"),colnames(lipid_mat)] <- combined_df[combined_df$Class %in% c("TG", "TAG"),colnames(lipid_mat)] / 3
-	bulk_df <- combined_df %>% dplyr::group_by(Class, Total.Carbons, Total.DBs) %>% dplyr::summarise(Species = paste(Species, collapse = ","), dplyr::across(colnames(lipid_mat), sum)) %>% data.frame()
-	rownames(bulk_df) <- paste(bulk_df$Class, bulk_df$Total.Carbons, bulk_df$Total.DBs, sep = ".")
+	bulk_df <- combined_df %>% dplyr::group_by(Class, Total.Carbons, Total.DBs) %>% dplyr::summarise(collapse = paste(Species, collapse = ","), dplyr::across(colnames(lipid_mat), sum)) %>% dplyr::ungroup() %>% dplyr::mutate(Species = paste(Class, Total.Carbons, Total.DBs, sep = ".")) %>% data.frame()
+	rownames(bulk_df) <- bulk_df$Species
+	bulk_df <- bulk_df[c("Species", "Class", "Total.Carbons", "Total.DBs", "collapse", colnames(lipid_mat))]
 	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
 	write.table(bulk_df, paste0(directory, out_filename), sep = "\t", quote = F, row.names = F, col.names = T)
 	return(bulk_df)
@@ -304,7 +308,7 @@ acyl.tail.to.bulk.species <- function(lipid_mat, lipid_anno, out_filename, direc
 acyl.tail.to.bulk.class <- function(lipid_mat, lipid_anno, out_filename, directory){
 	combined_df <- data.frame(lipid_anno, lipid_mat)
 	combined_df[combined_df$Class %in% c("TG", "TAG"),colnames(lipid_mat)] <- combined_df[combined_df$Class %in% c("TG", "TAG"),colnames(lipid_mat)] / 3
-	bulk_df <- combined_df %>% dplyr::group_by(Class) %>% dplyr::summarise(Species = paste(Species, collapse = ","), dplyr::across(colnames(lipid_mat), sum)) %>% data.frame()
+	bulk_df <- combined_df %>% dplyr::group_by(Class) %>% dplyr::summarise(collapse = paste(Species, collapse = ","), dplyr::across(colnames(lipid_mat), sum)) %>% data.frame()
 	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
 	write.table(bulk_df, paste0(directory, out_filename), sep = "\t", quote = F, row.names = F, col.names = T)
 	return(bulk_df)
