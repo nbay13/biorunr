@@ -258,12 +258,12 @@ abundance.to.percent.total <- function(in_filename, out_filename, directory, ann
 		percent_total <- 
 			temp %>% 
 			t() %>% data.frame() %>% 
-			mutate(Sample = colnames(temp)) %>% 
-			group_by(Sample) %>% 
-			summarise(across(setdiff(colnames(.), "Sample"), mean)) %>% 
+			dplyr::mutate(Sample = colnames(temp)) %>% 
+			dplyr::group_by(Sample) %>% 
+			dplyr::summarise(dplyr::across(setdiff(colnames(.), "Sample"), mean)) %>% 
 			tibble::column_to_rownames('Sample') %>% 
 			t() %>% data.frame() %>%
-			summarise(across(colnames(.), ~./sum(.)*100)) %>% 
+			dplyr::summarise(dplyr::across(colnames(.), ~./sum(.)*100)) %>% 
 			magrittr::set_rownames(colnames(data))
 	}
 	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
