@@ -295,8 +295,9 @@ total.to.percent.class <- function(lipid_mat, lipid_anno, out_filename, director
 
 #' @export acyl.tail.to.bulk.species
 acyl.tail.to.bulk.species <- function(lipid_mat, lipid_anno, out_filename, directory){
+	lipid_mat[lipid_anno$Class %in% c("TG", "TAG"),] <- lipid_mat[lipid_anno$Class %in% c("TG", "TAG"),] / 3
+	lipid_mat <- lipid_mat %>% dplyr::summarise(dplyr::across(colnames(lipid_mat), list(~./sum(.)*100), .names = "{.col}"))
 	combined_df <- data.frame(lipid_anno, lipid_mat)
-	combined_df[combined_df$Class %in% c("TG", "TAG"),colnames(lipid_mat)] <- combined_df[combined_df$Class %in% c("TG", "TAG"),colnames(lipid_mat)] / 3
 	bulk_df <- combined_df %>% dplyr::group_by(Class, Total.Carbons, Total.DBs) %>% dplyr::summarise(collapse = paste(Species, collapse = ","), dplyr::across(colnames(lipid_mat), sum)) %>% dplyr::ungroup() %>% dplyr::mutate(Species = paste(Class, Total.Carbons, Total.DBs, sep = ".")) %>% data.frame()
 	rownames(bulk_df) <- bulk_df$Species
 	bulk_df <- bulk_df[c("Species", "Class", "Total.Carbons", "Total.DBs", "collapse", colnames(lipid_mat))]
@@ -318,8 +319,9 @@ acyl.tail.to.bulk.species <- function(lipid_mat, lipid_anno, out_filename, direc
 
 #' @export acyl.tail.to.bulk.class
 acyl.tail.to.bulk.class <- function(lipid_mat, lipid_anno, out_filename, directory){
+	lipid_mat[lipid_anno$Class %in% c("TG", "TAG"),] <- lipid_mat[lipid_anno$Class %in% c("TG", "TAG"),] / 3
+	lipid_mat <- combined_df %>% dplyr::select(-colnames(lipid_anno)) %>% dplyr::summarise(dplyr::across(colnames(lipid_mat), list(~./sum(.)*100), .names = "{.col}"))
 	combined_df <- data.frame(lipid_anno, lipid_mat)
-	combined_df[combined_df$Class %in% c("TG", "TAG"),colnames(lipid_mat)] <- combined_df[combined_df$Class %in% c("TG", "TAG"),colnames(lipid_mat)] / 3
 	bulk_df <- combined_df %>% dplyr::group_by(Class) %>% dplyr::summarise(collapse = paste(Species, collapse = ","), dplyr::across(colnames(lipid_mat), sum)) %>% data.frame()
 	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
 	write.table(bulk_df, paste0(directory, out_filename), sep = "\t", quote = F, row.names = F, col.names = T)
