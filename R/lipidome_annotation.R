@@ -156,13 +156,13 @@ get.tail.saturation <- function(n_db){
 #' @export get.acyl.tails
 get.acyl.tails <- function(input_names){
 	# set up annotation vectors and lists
-	two_chain <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "DAG", "LacCER", "SM", "HexCER", "Cer", "dhCer")
+	two_chain <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "DAG", "LacCER", "SM", "HexCER", "Cer", "dhCer", "PG", "PI", "PS")
 	category_list <- list(
 		"Sterol" = c("CE"), 
 		"Sphingolipid" = c("Cer", "LacCER", "HexCER", "LCER", "SM", "dhCer"), 
 		"Glycerolipid" = c("DG", "TG", "DAG", "TAG"), 
 		"Fatty.Acyl" = c("FA"),
-		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE"), 
+		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE", "PG", "PI", "PS", "PA"), 
 		"Ether" = c("PE.O", "PE.P")
 	)
 	# clean up lipid name format
