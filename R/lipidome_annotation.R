@@ -320,7 +320,7 @@ acyl.tail.to.bulk.species <- function(lipid_mat, lipid_anno, out_filename, direc
 #' @export acyl.tail.to.bulk.class
 acyl.tail.to.bulk.class <- function(lipid_mat, lipid_anno, out_filename, directory){
 	lipid_mat[lipid_anno$Class %in% c("TG", "TAG"),] <- lipid_mat[lipid_anno$Class %in% c("TG", "TAG"),] / 3
-	lipid_mat <- combined_df %>% dplyr::select(-colnames(lipid_anno)) %>% dplyr::summarise(dplyr::across(colnames(lipid_mat), list(~./sum(.)*100), .names = "{.col}"))
+	lipid_mat <- lipid_mat %>% dplyr::summarise(dplyr::across(colnames(lipid_mat), list(~./sum(.)*100), .names = "{.col}"))
 	combined_df <- data.frame(lipid_anno, lipid_mat)
 	bulk_df <- combined_df %>% dplyr::group_by(Class) %>% dplyr::summarise(collapse = paste(Species, collapse = ","), dplyr::across(colnames(lipid_mat), sum)) %>% data.frame()
 	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
