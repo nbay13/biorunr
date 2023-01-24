@@ -225,17 +225,22 @@ get.acyl.tails <- function(input_names){
 }
 
 #' @export abundance.to.percent.total
-abundance.to.percent.total <- function(in_filename, out_filename, directory, anno_column, id_var = "Short.ID"){
+abundance.to.percent.total <- function(in_filename, out_filename, directory, anno_column, id_var = "Short.ID", exclude_classes = c()){
 	# read in file
 	tbl <- read.table(paste0(directory, in_filename), sep = "\t", stringsAsFactors = F, header = F, fill = T)
 	# split into annotation metadata and data
 	lipids <- as.character(tbl[1,(anno_column+1):ncol(tbl)])
+	lipid_anno <- annotate.lipid.species(lipids)
 	anno <- tbl[-1,1:anno_column]
 	data <- tbl[-1,(anno_column+1):ncol(tbl)]
 	data <- apply(data, 2, as.numeric)
 	data[is.na(data)] <- 0
 	colnames(data) <- lipids
 	colnames(anno) <- tbl[1,1:anno_column]
+	# filter based on Class-level black list
+	data <- data[,!lipid_anno$Class %in% exclude_classes]
+	lipids <- lipids[!lipid_anno$Class %in% exclude_classes]
+	lipid_anno <- lipid_anno[!lipid_anno$Class %in% exclude_classes,]
 	# Calculate initial percent total values
 	temp <- 
 		data %>% 
@@ -268,7 +273,6 @@ abundance.to.percent.total <- function(in_filename, out_filename, directory, ann
 			magrittr::set_rownames(colnames(data))
 	}
 	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
-	lipid_anno <- annotate.lipid.species(lipids)
 	final_output <- data.frame(Species = lipids, lipid_anno[,colnames(lipid_anno) != "Species"], percent_total)
 	write.table(final_output, paste0(directory, out_filename), sep = "\t", quote = F, row.names = F, col.names = T)
 	return(final_output)
