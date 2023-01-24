@@ -15,14 +15,15 @@ variance.filter <- function(x, col = F){
 }
 
 #' @export correlate.by.group
-correlate.by.group <- function(mat_a, mat_b, labels, transpose = T){
+correlate.by.group <- function(mat_a, mat_b, labels, transpose = T, method = c("pearson", "spearman")){
+	method <- match.arg(method)
 	if(!is.factor(labels)) labels <- factor(labels)
 	cor_list <- list()
 	for(lev in levels(labels)){
 		prep_a <- mat_a[,labels == lev]
 		prep_b <- mat_b[,labels == lev]
-		if(transpose) cor_list[[lev]] <- cor(t(variance.filter(prep_a)), t(variance.filter(prep_b)))
-		else cor_list[[lev]] <- cor(variance.filter(prep_a), variance.filter(prep_b))
+		if(transpose) cor_list[[lev]] <- cor(t(variance.filter(prep_a)), t(variance.filter(prep_b)), method = method)
+		else cor_list[[lev]] <- cor(variance.filter(prep_a), variance.filter(prep_b), method = method)
 	}
 	return(cor_list)
 }
