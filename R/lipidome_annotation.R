@@ -274,6 +274,7 @@ abundance.to.percent.total <- function(in_filename, out_filename, directory, ann
 	}
 	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
 	final_output <- data.frame(Species = lipids, lipid_anno[,colnames(lipid_anno) != "Species"], percent_total)
+	rownames(final_output) <- final_output$Species
 	write.table(final_output, paste0(directory, out_filename), sep = "\t", quote = F, row.names = F, col.names = T)
 	return(final_output)
 }
