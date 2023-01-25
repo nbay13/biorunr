@@ -325,7 +325,9 @@ acyl.tail.to.bulk.species.by.tail <- function(lipid_mat, lipid_anno, out_filenam
 	rownames(bulk_df) <- bulk_df$Species
 	print(head(temp_anno))
 	bulk_df <- bulk_df[c("Species", "Class", "Total.Carbons", "Total.DBs", "collapse", colnames(lipid_mat))]
-	bulk_df <- data.frame(rbind(bulk_df, data.frame(temp_anno[,c("Species", "Class", "Total.Carbons", "Total.DBs", "collapse")], temp_mat)))
+	temp_df <- data.frame(temp_anno[,c("Species", "Class", "Total.Carbons", "Total.DBs", "collapse")], temp_mat)
+	rownames(temp_df) <- temp_df$Species
+	bulk_df <- data.frame(rbind(bulk_df, ))
 	bulk_df[,colnames(lipid_mat)] <- bulk_df[,colnames(lipid_mat)] %>% dplyr::summarise(dplyr::across(colnames(lipid_mat), list(~./sum(.)*100), .names = "{.col}"))
 	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
 	write.table(bulk_df, paste0(directory, out_filename), sep = "\t", quote = F, row.names = F, col.names = T)
