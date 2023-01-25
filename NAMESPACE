@@ -3,6 +3,7 @@
 export("%>%")
 export(acyl.tail.to.bulk.class)
 export(acyl.tail.to.bulk.species)
+export(acyl.tail.to.bulk.species.by.tail)
 export(GO2DE.metrics)
 export(GO2gene.signature)
 export(abs.max)
