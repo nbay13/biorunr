@@ -311,16 +311,26 @@ acyl.tail.to.bulk.species <- function(lipid_mat, lipid_anno, out_filename, direc
 	return(bulk_df)
 }
 
-#acyl.tail.to.bulk.species.by.tail <- function(lipid_mat, lipid_anno, out_filename, directory){
-#	combined_df <- data.frame(lipid_anno, lipid_mat)
-#	combined_df[combined_df$Class %in% c("TG", "TAG"),colnames(lipid_mat)] <- combined_df[combined_df$Class %in% c("TG", "TAG"),colnames(lipid_mat)] / 3
-#	bulk_df <- combined_df %>% dplyr::group_by(Class, Total.Carbons, Total.DBs) %>% dplyr::summarise(collapse = paste(Species, collapse = ","), dplyr::across(colnames(lipid_mat), sum)) %>% dplyr::ungroup() %>% dplyr::mutate(Species = paste(Class, Total.Carbons, Total.DBs, sep = ".")) %>% data.frame()
-#	rownames(bulk_df) <- bulk_df$Species
-#	bulk_df <- bulk_df[c("Species", "Class", "Total.Carbons", "Total.DBs", "collapse", colnames(lipid_mat))]
-#	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
-#	write.table(bulk_df, paste0(directory, out_filename), sep = "\t", quote = F, row.names = F, col.names = T)
-#	return(bulk_df)
-#}
+#' @export acyl.tail.to.bulk.species.by.tail
+acyl.tail.to.bulk.species.by.tail <- function(lipid_mat, lipid_anno, out_filename, directory){
+	two_chain_ambig <- c("PI", "PC", "PE", "PG", "PS", "PG", "DG", "DAG", "PG", "PI", "PS")
+	lipid_mat[lipid_anno$Class %in% two_chain_ambig,] <- lipid_mat[lipid_anno$Class %in% two_chain_ambig,] / 2
+	temp_mat <- lipid_mat[lipid_anno$Class %in% c("PE.O", "PE.P", "HexCER", "LacCER", "Cer", "dhCer", "SM"),][c(F,T),]
+	lipid_mat <- lipid_mat[!lipid_anno$Class %in% c("PE.O", "PE.P", "HexCER", "LacCER", "Cer", "dhCer", "SM"),]
+	temp_anno <- lipid_anno[lipid_anno$Class %in% c("PE.O", "PE.P", "HexCER", "LacCER", "Cer", "dhCer", "SM"),][c(F,T),]
+	temp_anno$collapse <- temp_anno$Species
+	lipid_anno <- lipid_anno[!lipid_anno$Class %in% c("PE.O", "PE.P", "HexCER", "LacCER", "Cer", "dhCer", "SM"),]
+	combined_df <- data.frame(lipid_anno, lipid_mat)
+	bulk_df <- combined_df %>% dplyr::group_by(Class, Total.Carbons, Total.DBs) %>% dplyr::summarise(collapse = paste(Species, collapse = ","), dplyr::across(colnames(lipid_mat), sum)) %>% dplyr::ungroup() %>% dplyr::mutate(Species = paste(Class, Total.Carbons, Total.DBs, sep = ".")) %>% data.frame()
+	rownames(bulk_df) <- bulk_df$Species
+	print(head(temp_anno))
+	bulk_df <- bulk_df[c("Species", "Class", "Total.Carbons", "Total.DBs", "collapse", colnames(lipid_mat))]
+	bulk_df <- data.frame(rbind(bulk_df, data.frame(temp_anno[,c("Species", "Class", "Total.Carbons", "Total.DBs", "collapse")], temp_mat)))
+	bulk_df[,colnames(lipid_mat)] <- bulk_df[,colnames(lipid_mat)] %>% dplyr::summarise(dplyr::across(colnames(lipid_mat), list(~./sum(.)*100), .names = "{.col}"))
+	cat(paste("Saving data to: ", out_filename, "\nat: ", directory,"\n"))
+	write.table(bulk_df, paste0(directory, out_filename), sep = "\t", quote = F, row.names = F, col.names = T)
+	return(bulk_df)
+}
 
 #' @export acyl.tail.to.bulk.class
 acyl.tail.to.bulk.class <- function(lipid_mat, lipid_anno, out_filename, directory){
