@@ -323,7 +323,6 @@ acyl.tail.to.bulk.species.by.tail <- function(lipid_mat, lipid_anno, out_filenam
 	combined_df <- data.frame(lipid_anno, lipid_mat)
 	bulk_df <- combined_df %>% dplyr::group_by(Class, Total.Carbons, Total.DBs) %>% dplyr::summarise(collapse = paste(Species, collapse = ","), dplyr::across(colnames(lipid_mat), sum)) %>% dplyr::ungroup() %>% dplyr::mutate(Species = paste(Class, Total.Carbons, Total.DBs, sep = ".")) %>% data.frame()
 	rownames(bulk_df) <- bulk_df$Species
-	print(head(temp_anno))
 	bulk_df <- bulk_df[c("Species", "Class", "Total.Carbons", "Total.DBs", "collapse", colnames(lipid_mat))]
 	temp_df <- data.frame(temp_anno[,c("Species", "Class", "Total.Carbons", "Total.DBs", "collapse")], temp_mat)
 	rownames(temp_df) <- temp_df$Species
