@@ -24,7 +24,7 @@ code2genes <- function(DE_df, code){
 run.topGO <- function(geneList, method = "classic", ontology = "BP", size = 1000, tgd = NULL){
 	## prepare data
 	if(is.null(tgd)){
-		tgd <- topGO::new("topGOdata", ontology = ontology, allGenes = factor(geneList), nodeSize=2,
+		tgd <- new("topGOdata", ontology = ontology, allGenes = factor(geneList), nodeSize=2,
 		annot=annFUN.org, mapping="org.Hs.eg.db", ID = "alias")
 	}
 	## run tests
