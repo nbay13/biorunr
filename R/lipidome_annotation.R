@@ -282,6 +282,8 @@ abundance.to.percent.total <- function(in_filename, out_filename, directory, ann
 #' @export total.to.percent.class
 total.to.percent.class <- function(lipid_mat, lipid_anno, out_filename, directory){
 	combined_df <- data.frame(lipid_anno, lipid_mat)
+	# switch these all to PEs so they all together sum to 100 as is done in lipidomics core
+	temp_remove <- combined_df[combined_df$Class %in% c("PE", "PE-O", "PE-P", "PE.O", "PE.P"),"Class"]
 	combined_df[combined_df$Class %in% c("PE", "PE-O", "PE-P", "PE.O", "PE.P"),"Class"] <- "PE"
 	class_df <- 
 		combined_df %>% 
@@ -289,6 +291,8 @@ total.to.percent.class <- function(lipid_mat, lipid_anno, out_filename, director
 		dplyr::summarise(Species = Species, dplyr::across(colnames(lipid_mat), list(~./sum(.)*100), .names = "{.col}")) %>% 
 		dplyr::ungroup() %>% data.frame()
 	rownames(class_df) <- class_df$Species
+	# put the correct Class names back in after calculations
+	class_df[class_df$Class %in% c("PE", "PE-O", "PE-P", "PE.O", "PE.P"),"Class"] <- temp_remove
 	class_df[is.na(class_df)] <- 0
 	# reorder to match input, group_by will sort alphabetically
 	class_df <- class_df[rownames(combined_df),]
