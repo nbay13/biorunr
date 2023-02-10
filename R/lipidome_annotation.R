@@ -282,6 +282,7 @@ abundance.to.percent.total <- function(in_filename, out_filename, directory, ann
 #' @export total.to.percent.class
 total.to.percent.class <- function(lipid_mat, lipid_anno, out_filename, directory){
 	combined_df <- data.frame(lipid_anno, lipid_mat)
+	combined_df[combined_df$Class %in% c("PE", "PE-O", "PE-P", "PE.O", "PE.P"),"Class"] <- "PE"
 	class_df <- 
 		combined_df %>% 
 		dplyr::group_by(Class) %>% 
