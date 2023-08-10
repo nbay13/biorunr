@@ -1,5 +1,5 @@
-#' @export pca.plot
-pca.plot <- function(pca, meta, color_var = NA, fill_var = NA, shape_var = NA, plot_pcs = c("PC1", "PC2"), color_pal = NA){
+#' @export plot.pca
+plot.pca <- function(pca, meta, color_var = NA, fill_var = NA, shape_var = NA, plot_pcs = c("PC1", "PC2"), color_pal = NA){
 	if(length(intersect(rownames(pca$x), rownames(meta))) != length(union(rownames(pca$x), rownames(meta)))){
 		stop("Your PCA data and metadata rownames do not match :(\n  Please check your inputs")
 	}
