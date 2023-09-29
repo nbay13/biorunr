@@ -4,7 +4,7 @@ plot.pca <- function(pca, meta, color_var = NA, fill_var = NA, shape_var = NA, p
 		stop("Your PCA data and metadata rownames do not match :(\n  Please check your inputs")
 	}
 	if(is.na(color_pal)){
-		color_pal <- ggplot.colors(length(unique(meta[,color_var])))
+		color_pal <- biorunr::ggplot.colors(length(unique(meta[,color_var])))
 	}
 	vars <- pca$sdev^2
 	prop_vars <- round(vars / sum(vars) * 100,2)
