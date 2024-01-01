@@ -92,7 +92,7 @@ get.deltas <- function(df, id, group, comparison, vars, percent = F, return_all 
 		delta <- data.frame(filt_df[filt_df[,group] == comparison[1],!colnames(filt_df) %in% c(group, vars), drop = F],a,b,delta)
 	} else {
 		colnames(delta) <- paste("Delta", vars, sep = ".")
-		delta <- data.frame(filt_df[filt_df[,group] == comparison[1],!colnames(filt_df) %in% c(group, vars), drop = F],delta)
+		delta <- data.frame(filt_df[filt_df[,group] == comparison[1], group, drop = F],delta)
 	}
 	return(delta)
 }
