@@ -122,6 +122,11 @@ annotate.lipid.species <- function(input_names){
 			} else {
 				structure_anno[i,5] <- "SFA"
 			}
+		} else if(class_name[i] == "Chol"){
+			structure_anno[i,2] <- temp[[i]][2]
+			structure_anno[i,3] <- temp[[i]][2]
+			structure_anno[i,4] <- NA
+			structure_anno[i,5] <- NA
 		} else {
 			# For classes with one chain
 			structure_anno[i,2] <- temp[[i]][2]
