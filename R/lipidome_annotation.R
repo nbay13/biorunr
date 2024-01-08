@@ -213,7 +213,10 @@ get.acyl.tails <- function(input_names){
 			if(structure_anno[i,1] == "Cer" & as.numeric(temp[[i]][3]) == 0) structure_anno[i,1] <- "dhCer"
 			extras[[as.character(i)]] <- c(structure_anno[i,1], as.numeric(temp[[i]][4]), as.numeric(temp[[i]][5]))
 			structure_anno[i,3] <- as.numeric(temp[[i]][3])
-		} else {
+		} else if(class_name[i] == "Chol"){
+			structure_anno[i,2] <- temp[[i]][2]
+			structure_anno[i,3] <- NA
+		else {
 			# For classes with one chain
 			structure_anno[i,2] <- temp[[i]][2]
 			structure_anno[i,3] <- temp[[i]][3]
