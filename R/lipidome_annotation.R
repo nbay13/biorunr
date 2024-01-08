@@ -216,7 +216,7 @@ get.acyl.tails <- function(input_names){
 		} else if(class_name[i] == "Chol"){
 			structure_anno[i,2] <- temp[[i]][2]
 			structure_anno[i,3] <- NA
-		else {
+		} else {
 			# For classes with one chain
 			structure_anno[i,2] <- temp[[i]][2]
 			structure_anno[i,3] <- temp[[i]][3]
