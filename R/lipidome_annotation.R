@@ -18,7 +18,8 @@ get.lipid.category <- function(species){
 		"Glycerolipid" = c("DG", "TG", "DAG", "TAG"), 
 		"Fatty.Acyl" = c("FA"),
 		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE", "PG", "PI", "PS", "PA"), 
-		"Ether" = c("PE.O", "PE.P")
+		"Ether" = c("PE.O", "PE.P"),
+		"Cholesterol" = "Chol"
 	)
 	inv_list <- inverse.list(category_list)
 	return(unlist(sapply(species, function(x){
@@ -52,7 +53,8 @@ annotate.lipid.species <- function(input_names){
 		"Glycerolipid" = c("DG", "TG", "DAG", "TAG"), 
 		"Fatty.Acyl" = c("FA"),
 		"Glycerophospholipid" = c("LPC", "LPE", "PC", "PE", "PG", "PI", "PS", "PA"), 
-		"Ether" = c("PE.O", "PE.P")
+		"Ether" = c("PE.O", "PE.P"),
+		"Cholesterol" = "Chol"
 	)
 	# clean up lipid name format
 	lipid_names <- gsub(" |-|/|\\\\|:|;|_|~", "\\.", input_names)
