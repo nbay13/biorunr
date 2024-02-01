@@ -37,5 +37,4 @@ write.rnk.file <- function(df, filename, metric = "signed.log.p"){
   out_df <- data.frame(gene = rownames(df), value = df[[metric]])
   ord_df <- out_df[order(out_df$value, decreasing = T),]
   write.table(ord_df, filename, row.names = F, col.names = F, quote = F, sep = "\t")
-  return(ord_df)
 }
