@@ -31,3 +31,11 @@ add.signed.log.p <- function(de_table, col_name = "padj", sign_name = "stat"){
 	de_table$signed.log.p <- -log10(de_table[,col_name]) * sign(de_table[,sign_name])
 	return(de_table)
 }
+
+#' @export write.rnk.file
+write.rnk.file <- function(df, filename, metric = "signed.log.p"){
+  out_df <- data.frame(gene = rownames(df), value = df[[metric]])
+  ord_df <- out_df[order(out_df[[metric]], decreasing = T),]
+  write.table(ord_df, filename, row.names = F, col.names = F, quote = F, sep = "\t")
+  return(ord_df)
+}
