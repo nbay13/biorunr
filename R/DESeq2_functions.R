@@ -8,8 +8,8 @@ filter.genes.for.DE <- function(exp_tbl, by = c("mean", "q", "name"), thresh = 5
 
 #' @export get.contrast.results
 get.contrast.results <- function(deseq_dataset, contrast, 
-  lfc_shrink = T, shrink_type = "ashr", filename = F, log.p = T){
-	results <- DESeq2::results(deseq_dataset, contrast = contrast)
+  lfc_shrink = T, shrink_type = "ashr", filename = F, log.p = T, ...){
+	results <- DESeq2::results(deseq_dataset, contrast = contrast, ...)
 	if(lfc_shrink){
 		shrink_results <- DESeq2::lfcShrink(deseq_dataset, res = results, contrast = contrast, type = shrink_type)
     	results$log2FoldChange <- shrink_results$log2FoldChange
