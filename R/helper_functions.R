@@ -1,3 +1,9 @@
+#' @export prop.table.2
+prop.table.2 <- function(x, y, margin = 1, digits = 2) {
+  if (is.null(digits)) return(prop.table(table(x, y), margin))
+  else return(round(prop.table(table(x, y), margin), digits))
+}
+
 #' @export split.df
 split.df <- function(df, labels, by_row = F){
 	if(by_row){
