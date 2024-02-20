@@ -94,7 +94,7 @@ annotate.lipid.species <- function(input_names){
 			 else if(fa_dbs == 0 & as.numeric(structure_anno[i,4]) == 0){
 				structure_anno[i,5] <- "SFA"
 			} else {
-				structure_anno[i,5] <- "Unknown"
+				structure_anno[i,5] <- "UFA"
 			}
 		} else if(class_name[i] == "PE" & temp[[i]][2] %in% c("P","O")){
 			# For PE classes with two chains and extra character for PE-P and PE-O
