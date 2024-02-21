@@ -40,8 +40,8 @@ write.rnk.file <- function(df, filename, metric = "signed.log.p"){
 }
 
 #' @export prep.volcano.plot
-prep.volcano.plot <- function(de_table, stat_name = "padj", stat_code = "FDR", effect_name = "log2FoldChange", 
-  effect_code = "L2FC", sig_name = "sig", stat_thresh = 0.05, effect_thresh = 1){
+prep.volcano.plot <- function(de_table, stat_name = "padj", effect_name = "log2FoldChange", 
+  stat_code = "FDR", effect_code = "L2FC", sig_name = "sig", stat_thresh = 0.05, effect_thresh = 1){
   de_table$sig <- ifelse(de_table[[stat_name]] < stat_thresh & abs(de_table[[effect_name]]) > effect_thresh, paste(stat_code, "&", effect_code, sep = " "), "NS")
   de_table$sig[de_table[[stat_name]] >= stat_thresh & abs(de_table[[effect_name]]) > effect_thresh] <- effect_code
   de_table$sig[de_table[[stat_name]] < stat_thresh & abs(de_table[[effect_name]]) <= effect_thresh] <- stat_code
