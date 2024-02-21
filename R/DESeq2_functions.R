@@ -38,3 +38,14 @@ write.rnk.file <- function(df, filename, metric = "signed.log.p"){
   ord_df <- out_df[order(out_df$value, decreasing = T),]
   write.table(ord_df, filename, row.names = F, col.names = F, quote = F, sep = "\t")
 }
+
+#' @export prep.volcano.plot
+prep.volcano.plot <- function(de_table, stat_name = "padj", stat_code = "FDR", effect_name = "log2FoldChange", 
+  effect_code = "L2FC", sig_name = "sig", stat_thresh = 0.05, effect_thresh = 1){
+  de_table$sig <- ifelse(de_table[[stat_name]] < stat_thresh & abs(de_table[[effect_name]]) > effect_thresh, paste(stat_code, "&", effect_code, sep = " "), "NS")
+  de_table$sig[de_table[[stat_name]] >= stat_thresh & abs(de_table[[effect_name]]) > effect_thresh] <- effect_code
+  de_table$sig[de_table[[stat_name]] < stat_thresh & abs(de_table[[effect_name]]) <= effect_thresh] <- stat_code
+  de_table$sig <- factor(de_table$sig, levels = c(paste(stat_code, "&", effect_code, sep = " "), stat_code, effect_code, "NS"))
+  colnames(de_table)[colnames(de_table) = "sig"] <- sig_name
+  return(de_table)
+}
