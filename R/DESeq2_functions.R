@@ -46,6 +46,6 @@ prep.volcano.plot <- function(de_table, stat_name = "padj", effect_name = "log2F
   de_table$sig[de_table[[stat_name]] >= stat_thresh & abs(de_table[[effect_name]]) > effect_thresh] <- effect_code
   de_table$sig[de_table[[stat_name]] < stat_thresh & abs(de_table[[effect_name]]) <= effect_thresh] <- stat_code
   de_table$sig <- factor(de_table$sig, levels = c(paste(stat_code, "&", effect_code, sep = " "), stat_code, effect_code, "NS"))
-  colnames(de_table)[colnames(de_table) = "sig"] <- sig_name
+  colnames(de_table)[colnames(de_table) == "sig"] <- sig_name
   return(de_table)
 }
