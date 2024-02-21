@@ -1,3 +1,24 @@
+#' @export factor.columns
+factor.columns <- function(df, col_names = NULL, levels_list = NULL, chr_to_factor = FALSE){
+	if(chr_to_factor){
+		chr_col_names <- colnames(df)[which(sapply(df, is.character))]
+		for(name in unique(c(chr_col_names, col_names))){
+			if(name %in% names(levels_list)) df[[name]] <- factor(df[[name]], levels = levels_list[[name]])
+			else df[[name]] <- factor(df[[name]])			
+		}
+	} else {
+		if(any(!col_names %in% colnames(df))) message("You have provided column names not present in the data.frame")
+		else if(any(!names(levels_list) %in% col_names))  message("You have provided levels for columns not marked for factor conversion")
+		else {
+			for(name in col_names){
+				if(name %in% names(levels_list)) df[[name]] <- factor(df[[name]], levels = levels_list[[name]])
+				else df[[name]] <- factor(df[[name]])
+			}
+		}	
+	}
+	return(df)
+}
+
 #' @export prop.table.2
 prop.table.2 <- function(x, y, margin = 1, digits = 2) {
   if (is.null(digits)) return(prop.table(table(x, y), margin))
