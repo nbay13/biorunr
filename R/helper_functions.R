@@ -129,7 +129,7 @@ centered.breaks <- function(pal, vals, mid = NULL){
 	len <- length(pal)
 	if(is.null(mid)) mid <- min(vals) + (max(vals) - min(vals))/2
 	breaks <- c(
-		seq(min(vals), mid, length.out=ceiling(len/2)+1),
+		seq(min(vals), mid, length.out=floor(len/2)+1),
 		seq(mid, max(vals), length.out=ceiling(len/2)+1)[-1]
 		)
 	return(breaks)
