@@ -127,11 +127,20 @@ get.deltas <- function(df, id, group, comparison, vars, percent = F, return_all 
 #' @export centered.breaks
 centered.breaks <- function(pal, vals, mid = NULL){
 	len <- length(pal)
-	if(is.null(mid)) mid <- min(vals) + (max(vals) - min(vals))/2
-	breaks <- c(
-		seq(min(vals), mid, length.out=floor(len/2)+1),
-		seq(mid, max(vals), length.out=ceiling(len/2)+1)[-1]
+	if(is.null(mid)) mid <- (max(vals) + min(vals)) / 2
+	else if(mid <= min(vals) | mid >= max(vals)) message("Cannot have midpoint outside range of data")
+	if(len %% 2 == 0){
+		breaks <- c(
+			seq(min(vals), mid, length.out=len/2+1),
+			seq(mid + (max(vals) - mid)/(len/2), max(vals), length.out=floor(len/2))
 		)
+	} else {
+		step <- (max(vals) - min(vals)) / len
+		breaks <- c(
+			seq(min(vals), mid - step/2, length.out=ceiling(len/2)),
+			seq(mid + step/2, max(vals), length.out=ceiling(len/2))
+		)
+	}
 	return(breaks)
 }
 
