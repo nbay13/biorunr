@@ -188,12 +188,12 @@ quantile.normalization <- function(df){
 	return(df_final)
 }
 
-#' @noRd index.to.mean
+#' @noRd
 index.to.mean <- function(my_index, my_mean){
 	return(my_mean[my_index])
 }
 
-#' @noRd .ls.objects
+#' @noRd
 .ls.objects <- function (pos = 1, pattern, order.by,
                         decreasing=FALSE, head=FALSE, n=5) {
     napply <- function(names, fn) sapply(names, function(x)
