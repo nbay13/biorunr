@@ -19,6 +19,7 @@ Imports:
     ggplot2,
     GSVA,
     Hmisc,
+    limma,
     magrittr,
     msigdbr,
     org.Hs.eg.db,
