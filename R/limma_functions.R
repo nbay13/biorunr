@@ -17,7 +17,7 @@ limma.fit.contrast <- function(data, mm, contrast = NULL){
 }
 
 #' @export two.group.limma
-two.group.limma <- function(data, labels, add_student = FALSE, col_name = "condition"){
+two.group.limma <- function(data, labels, add_student = FALSE){
 	mm <- make.model.matrix(labels)
 	tmp <- limma.fit.contrast(t(data), mm)
 	tt <- data.frame(limma::topTable(tmp, sort.by = "P", n = Inf))
