@@ -25,9 +25,9 @@ get.MSigDB.genesets <- function(msig_df, genesets = c("KEGG", "REACTOME", "H$"))
 }
 
 #' @export run.FGSEA
-run.FGSEA <- function(rnk, genesets, nproc = 2, minGenes = 3, maxGenes = 5000, minOverlap = 1, reformat = T, filename = F, minP = 1e-20){
+run.FGSEA <- function(rnk, genesets, nproc = 2, minGenes = 3, maxGenes = 5000, minOverlap = 1, reformat = T, filename = F, minP = 1e-20, ...){
 	# make sure package is loaded
-	gsea_res <- fgsea::fgsea(stats = rnk, pathways = genesets, minSize = minGenes, maxSize = maxGenes, eps = minP, nproc = nproc)
+	gsea_res <- fgsea::fgsea(stats = rnk, pathways = genesets, minSize = minGenes, maxSize = maxGenes, eps = minP, nproc = nproc, ...)
 	## order results based on NES
 	ord_gsea_res <- gsea_res %>% dplyr::arrange(desc(NES))
 	## reformat leadingEdge column
