@@ -12,6 +12,12 @@ run.ssGSEA <- function(exp_mat, gene_list, method = "ssgsea", norm = F){
 	return(GSVA::gsva(exp_mat, gene_list, method = method, ssgsea.norm = norm))
 }
 
+#' @export run.ssGSEA2
+run.ssGSEA2 <- function(exp_mat, gene_list, method = "ssgsea", norm = F){
+	gsvaPar <- GSVA::ssgseaParam(exp_mat, gene_list, normalize = norm)
+	return(GSVA::gsva(gsvaPar))
+}
+
 #' @export list.to.gmx
 list.to.gmx <- function(list, wd, filename){
 	n.obs <- sapply(list, length)
