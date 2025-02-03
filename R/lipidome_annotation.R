@@ -360,4 +360,19 @@ acyl.tail.to.bulk.class <- function(lipid_mat, lipid_anno, out_filename, directo
 	return(bulk_df)
 }
 
+#' @export acyl.tail.to.percent.saturation
+acyl.tail.to.percent.saturation <- function(species_matrix, species_anno){
+	species_matrix[species_anno$Class == "TG",] <- species_matrix[species_anno$Class == "TG",] / 3
+	temp_df <- data.frame(species_anno, species_matrix)
+	sat_df <- 
+		temp_df %>% 
+		dplyr::group_by(Saturation) %>% 
+		dplyr::summarise_at(colnames(species_matrix), sum) %>% 
+	dplyr::ungroup() %>% 
+	tibble::column_to_rownames('Saturation') %>% 
+	dplyr::mutate_at(colnames(species_matrix), ~./sum(.)*100) %>% 
+	data.frame()
+	return(sat_df)
+}
+
 
