@@ -10,7 +10,7 @@ load.MSigDB <- function(species){
 	## R package for MSigDB
 	msig_df <- msigdbr::msigdbr(species = species)
 	cat(paste0("Printing available geneset categories for: ", species, "\n"))
-	print(data.frame(msig_df %>% dplyr::distinct(gs_cat, gs_subcat) %>% dplyr::arrange(gs_cat, gs_subcat)))
+	print(data.frame(msig_df %>% dplyr::distinct(gs_collection, gs_subcollection) %>% dplyr::arrange(gs_collection, gs_subcollection)))
 	return(msig_df)
 }
 
@@ -18,7 +18,7 @@ load.MSigDB <- function(species){
 get.MSigDB.genesets <- function(msig_df, genesets = c("KEGG", "REACTOME", "H$")){
 	# Default gets KEGG, Reactome, and Hallmarks genesets
 	reg_exp <- paste(genesets, collapse = "|")
-	gsea_df <- msig_df %>% dplyr::filter(grepl(reg_exp, gs_subcat) | grepl(reg_exp, gs_cat))
+	gsea_df <- msig_df %>% dplyr::filter(grepl(reg_exp, gs_subcollection) | grepl(reg_exp, gs_collection))
 	## format as list
 	gsea_list <- gsea_df %>% split(x = .$gene_symbol, f = .$gs_name)
 	return(gsea_list)

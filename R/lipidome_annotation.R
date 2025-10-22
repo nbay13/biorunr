@@ -376,3 +376,9 @@ acyl.tail.to.percent.saturation <- function(species_matrix, species_anno){
 }
 
 
+simplify.TAG.species <- function(lipid_matrix, lipid_anno){
+	combined_df <- data.frame(lipid_anno, lipid_mat)
+	combined_df %>% 
+	filter(Class %in% c("TG", "TAG")) %>%
+	group_by(Longest.Tail, )
+}
